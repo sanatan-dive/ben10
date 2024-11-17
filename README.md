@@ -1,36 +1,72 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🚧UNDER CONSTRUCTION🚧
+---
 
-## Getting Started
+# 🛸 Ben 10 AI Analyzer: Discover Your Alien Persona! 🌟
 
-First, run the development server:
+Welcome to the **Ben 10 AI Analyzer**, a cutting-edge web application where your tweets are analyzed by an AI to assign you a **Ben 10 Alien persona**! 👽 Join the fun by logging in with your Twitter account, see which alien fits your personality, and participate in the community by voting for others. 🎉
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🌟 Features
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **🔍 Analyze Your Tweets:**  
+  Enter your Twitter username, and our AI will analyze your tweet patterns to assign you one of the **76 Ben 10 Aliens**.  
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **👍 Yah or 👎 Nah Voting System:**  
+  Vote on others' aliens! If someone gets more than 10 "Nahs," they get reassigned a new alien.  
 
-## Learn More
+- **🏆 Leaderboard:**  
+  Check out the leaderboard showcasing the most popular users with the highest "Yah" votes.  
 
-To learn more about Next.js, take a look at the following resources:
+- **🔒 Secure Authentication:**  
+  Login with your Twitter account using **Kinde** to keep your data safe.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🚀 How It Works
 
-## Deploy on Vercel
+1. **Login**  
+   Log in securely using your Twitter account.  
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+2. **Analyze**  
+   Enter your Twitter username, and our AI will fetch your tweets for analysis.  
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+3. **Alien Assignment**  
+   Based on your tweets, you’ll get one of 76 iconic Ben 10 aliens like **Four Arms**, **Heatblast**, or **Alien X**.  
+
+4. **Vote and Compete**  
+   Vote "Yah" or "Nah" on others’ aliens and climb the leaderboard!  
+
+---
+
+## 🌐 Tech Stack
+
+- **Frontend**: [Next.js 15](https://nextjs.org/) with TypeScript and Tailwind CSS  
+- **AI Model**: Hugging Face's text-classification models  
+- **Twitter Integration**: Twitter API v2  
+- **Authentication**: [Kinde](https://kinde.com)  
+- **Database**: PostgreSQL with Prisma ORM  
+- **Hosting**: Vercel  
+
+---
+
+## 🛠️ Installation
+
+Want to contribute or run this project locally? Follow these steps:  
+
+### Prerequisites
+- Node.js (v16+)
+- PostgreSQL
+
+### Steps
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-username/ben10-ai.git
+   cd ben10
+2. Install Dependencies
+   ```bash
+   npm install
+3. Setup ur env file
+4.
+  ```bash
+    npm run dev

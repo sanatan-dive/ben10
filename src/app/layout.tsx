@@ -4,6 +4,7 @@ import "./globals.css";
 import { FloatingNav } from "@/components/ui/floating-navbar";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ModeToggle } from "@/components/ui/theme-btn";
+import { AuthProvider } from "./AuthProvider";
 
 // Load local fonts
 const geistSans = localFont({
@@ -19,7 +20,7 @@ const geistMono = localFont({
 
 // Metadata for the application
 export const metadata: Metadata = {
-  title: "Ben 10",
+  title: "Ben10ify",
   description: "choose your alien",
 };
 
@@ -29,7 +30,7 @@ export default function RootLayout({
   children: React.ReactNode; // Define the children prop type correctly
 }) {
   return (
-    
+    <AuthProvider>
     <html lang="en" className="h-full">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased h-full`}
@@ -62,5 +63,6 @@ export default function RootLayout({
         </ThemeProvider>
       </body>
     </html>
+    </AuthProvider>
   );
 }
