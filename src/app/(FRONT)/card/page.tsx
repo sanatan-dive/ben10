@@ -109,7 +109,8 @@ export default function AlienCard() {
           {/* Alien Title */}
           <div className="flex items-center justify-center">
             
-            //todo add rainbow button
+            //todo add rainbow button 
+            //todo
           <div className={`flex justify-center items-center rounded-full w-32 ${alienTitleBackgroundClass()}`}>
             <span className="text-lg text-white text-center font-semibold px-4 py-2 rounded">
               {userData.alienTitle}
