@@ -1,6 +1,24 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@keyframes rainbow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 70% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.rainbow-bg {
+  background: linear-gradient(45deg, red, orange, yellow, green, cyan, blue, violet,red);
+  background-size: 400% 400%;
+  animation: rainbow 5s ease-in-out infinite;
+}
+
 
 @layer base {
   :root {
@@ -77,3 +95,7 @@
     @apply bg-background text-foreground;
   }
 }
+
+
+
+
