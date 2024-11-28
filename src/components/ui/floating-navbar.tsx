@@ -9,6 +9,7 @@ import Link from "next/link";
 import { ModeToggle } from "./theme-btn";
 import { LogoutLink, RegisterLink } from "@kinde-oss/kinde-auth-nextjs/components";
 import Cookies from "js-cookie";
+import { useKindeAuth } from "@kinde-oss/kinde-auth-nextjs";
 
 // Authentication hook with cookies
 const useAuth = () => {
@@ -40,7 +41,7 @@ export const FloatingNav: React.FC<FloatingNavProps> = ({
   navItems,
   className = "",
 }) => {
-  const { authenticated, toggleAuthenticated } = useAuth();
+  const { isAuthenticated } = useKindeAuth();
 
   return (
     <AnimatePresence mode="wait">
@@ -68,10 +69,10 @@ export const FloatingNav: React.FC<FloatingNavProps> = ({
         ))}
 
         <button
-          onClick={toggleAuthenticated}
+         
           className="border text-sm font-medium relative border-neutral-200 dark:border-white/[0.2] text-black dark:text-white px-4 py-2 rounded-full"
         >
-          {authenticated ? (
+          {isAuthenticated ? (
             <LogoutLink>Sign out</LogoutLink>
           ) : (
             <RegisterLink>Sign in</RegisterLink>

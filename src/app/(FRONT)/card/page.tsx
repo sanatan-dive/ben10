@@ -125,6 +125,7 @@ export default function AlienCard() {
   };
 
   if (!userData) return <p>Loading...</p>;
+  
 
   return (
     <div className="p-8 mt-28 flex items-center justify-center">
@@ -152,15 +153,19 @@ export default function AlienCard() {
           </div>
 
           {/* Main Image */}
-          <div className="relative h-48 bg-gradient-to-br from-green-500 to-blue-400 rounded-lg overflow-hidden">
-            <Image
-              src={userData.image || "/placeholder.svg"}
-              alt={userData.name}
-              width={300}
-              height={200}
-              className="object-cover w-full h-full"
-            />
-          </div>
+         
+
+<div className="relative h-48 bg-gradient-to-br from-green-500 to-blue-400 rounded-lg overflow-hidden">
+  <Image
+    src={userData.image || "/placeholder.svg"}
+    alt={userData.name || "User Image"}
+    width={600}  // Aspect ratio width for responsiveness
+    height={400} // Aspect ratio height for responsiveness
+    className="object-cover w-full h-full"
+    layout="responsive"  // Ensures responsive scaling
+  />
+</div>
+
 
           {/* Abilities */}
           <div className="space-y-3">
