@@ -50,7 +50,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="flex">
+          
             {/* Floating navigation bar */}
           
             
@@ -65,7 +65,7 @@ export default function RootLayout({
             />
             {/* Mode toggle button */}
                    
-          </div>
+          
           {/* Main content */}
           {children}
           

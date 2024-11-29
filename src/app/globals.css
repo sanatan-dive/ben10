@@ -15,7 +15,7 @@
 
 .rainbow-bg {
   background: linear-gradient(45deg, red, orange, yellow, green, cyan, blue, violet,red);
-  background-size: 400% 400%;
+  background-size: 300% 300%;
   animation: rainbow 5s ease-in-out infinite;
 }
 

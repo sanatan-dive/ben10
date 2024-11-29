@@ -96,9 +96,9 @@ export default function AlienCard() {
       case "Common":
         return "bg-gradient-to-r from-blue-700 to-blue-400";
       case "Rare":
-        return "bg-gradient-to-r from-red-700 to-red-400";
+        return "bg-gradient-to-r from-red-800 via-red-500 to-red-800   ";
       case "Epic":
-        return "bg-gradient-to-r from-purple-500 to-pink-500";
+        return "bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500";
       case "Legendary":
         return "bg-gradient-to-r from-red-500 via-yellow-500 to-green-500 rainbow-bg";
       default:
@@ -141,28 +141,26 @@ export default function AlienCard() {
 
           {/* Alien Title */}
           <div className="flex justify-center">
-            <RainbowButton>
-            <div
-              className={`flex justify-center items-center rounded-full w-32  ${alienTitleBackgroundClass()}`}
-            >
+            <RainbowButton className={`flex justify-center items-center m-0 p-0 inset-0 rounded-full w-32 animate-moving-gradient ${alienTitleBackgroundClass()}`}>
+           
               <span className="text-lg text-white font-semibold px-4 py-2">
                 {userData.alienTitle}
               </span>
-            </div>
+            
             </RainbowButton>
           </div>
 
           {/* Main Image */}
          
 
-<div className="relative h-48 bg-gradient-to-br from-green-500 to-blue-400 rounded-lg overflow-hidden">
+<div className="relative flex justify-center items-center h-48 bg-gradient-to-br from-green-500 to-blue-400 rounded-lg overflow-hidden">
   <Image
     src={userData.image || "/placeholder.svg"}
     alt={userData.name || "User Image"}
-    width={600}  // Aspect ratio width for responsiveness
-    height={400} // Aspect ratio height for responsiveness
-    className="object-cover w-full h-full"
-    layout="responsive"  // Ensures responsive scaling
+    width={40}  // Aspect ratio width for responsiveness
+    height={48} // Aspect ratio height for responsiveness
+    className=" object-fill  w-80 h-48"
+     // Ensures responsive scaling
   />
 </div>
 

@@ -4,6 +4,7 @@ import { TwitterApi } from 'twitter-api-v2';
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const username = url.searchParams.get("username");
+  
 
   if (!username) {
     return new Response("Username is required", { status: 400 });
@@ -15,6 +16,7 @@ export async function GET(request: Request) {
     const apiSecretKey = process.env.TWITTER_API_SECRET_KEY;
     const accessToken = process.env.TWITTER_ACCESS_TOKEN;
     const accessTokenSecret = process.env.TWITTER_ACCESS_TOKEN_SECRET;
+    
 
     if (!apiKey || !apiSecretKey || !accessToken || !accessTokenSecret) {
       return new Response("Twitter OAuth credentials are missing", { status: 500 });
@@ -27,13 +29,16 @@ export async function GET(request: Request) {
       accessToken,
       accessSecret: accessTokenSecret,
     });
+    console.log('here')
 
     // Get user by username
     const user = await twitterClient.v2.userByUsername(username, {
       'user.fields': ['profile_image_url', 'public_metrics'], // Request necessary fields
     });
+    
 
     const userData = user.data;
+    
 
     if (!userData) {
       return new Response("User not found", { status: 404 });
