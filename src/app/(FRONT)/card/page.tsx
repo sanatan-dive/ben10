@@ -45,14 +45,7 @@ export default function AlienCard() {
     );
   };
 
- const alienApi = async () => {
-  try {
-    const response = await axios.get(`https://ben10-api.herokuapp.com/aliens`);
-    
-  } catch (error) {
-    
-  }
- }
+
 
   useEffect(() => {
     let name = searchParams?.get("name");

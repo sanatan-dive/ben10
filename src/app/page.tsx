@@ -16,13 +16,21 @@ export default function Home() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true); // Set loading state
-
+    setIsSubmitting(true);
+  
     try {
+      console.log("hitting api");
+  
+      // Save the username in the database
+      await axios.post("/api/saveTwitterUser", { username });
+  
       // Fetch user data from the backend API
       const response = await axios.get(`/api/twitter?username=${username}`);
+      const tweetResponse = await axios.get(`/api/tweets?username=${username}`);
+      const userTweets = tweetResponse.data;
       const userData = response.data;
-
+      console.log(userTweets);
+  
       // Build the query string using URLSearchParams
       const query = new URLSearchParams({
         name: userData.name,
@@ -30,15 +38,16 @@ export default function Home() {
         followers: userData.public_metrics.followers_count.toString(),
         posts: userData.public_metrics.tweet_count.toString(),
       }).toString();
-
+  
       // Navigate to the /card page with the query string
       router.push(`/card?${query}`);
     } catch (err) {
       setError("Error fetching Twitter data. Please try again.");
     } finally {
-      setIsSubmitting(false); // Reset loading state
+      setIsSubmitting(false);
     }
   };
+  
 
   useEffect(() => {
     if (isAuthenticated && user?.given_name) {
@@ -76,7 +85,7 @@ export default function Home() {
             whileFocus={{ scale: 1.05 }}
             type="text"
             placeholder="Twitter Username"
-            value={username}
+            value={username.trim()}
             onChange={(e) => setUsername(e.target.value)}
             className="p-2 mb-4 w-64 border border-gray-400 rounded-md  text-white bg-stone-800 focus:outline-none focus:ring-2 focus:ring-[#00ff00] focus:ring-offset-2"
             required
