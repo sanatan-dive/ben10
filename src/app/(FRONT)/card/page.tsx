@@ -19,6 +19,7 @@ interface AlienData {
 
 export default function AlienCard() {
   const searchParams = useSearchParams();
+  
   const [userData, setUserData] = useState<any>(null);
 
   // Utility function to assign alien based on user metrics (followers and posts)
@@ -45,7 +46,18 @@ export default function AlienCard() {
     );
   };
 
-
+  const tweets = async (username: string) => {
+    if (!username) {
+      console.error("Username is required for fetching tweets.");
+      return;
+    }
+    try {
+      const response = await axios.get(`/api/tweets?username=${username}`);
+      console.log(response.data); // Do something with the tweet data here if needed
+    } catch (error) {
+      console.error("Error fetching tweets:", error);
+    }
+  };
 
   useEffect(() => {
     let name = searchParams?.get("name");
@@ -81,6 +93,11 @@ export default function AlienCard() {
       alienPower: assignedAlien.power,
       alienDescription: assignedAlien.description,
     });
+
+    // Call the tweet function once the user data is set
+    if (name) {
+      tweets(name);
+    }
   }, [searchParams]);
 
   // Dynamically set the background color for the "Alien Title" section
@@ -89,7 +106,7 @@ export default function AlienCard() {
       case "Common":
         return "bg-gradient-to-r from-blue-700 to-blue-400";
       case "Rare":
-        return "bg-gradient-to-r from-red-800 via-red-500 to-red-800   ";
+        return "bg-gradient-to-r from-red-800 via-red-500 to-red-800";
       case "Epic":
         return "bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500";
       case "Legendary":
@@ -118,7 +135,6 @@ export default function AlienCard() {
   };
 
   if (!userData) return <p>Loading...</p>;
-  
 
   return (
     <div className="p-8 mt-28 flex items-center justify-center">
@@ -135,28 +151,22 @@ export default function AlienCard() {
           {/* Alien Title */}
           <div className="flex justify-center">
             <RainbowButton className={`flex justify-center items-center m-0 p-0 inset-0 rounded-full w-32 animate-moving-gradient ${alienTitleBackgroundClass()}`}>
-           
               <span className="text-lg text-white font-semibold px-4 py-2">
                 {userData.alienTitle}
               </span>
-            
             </RainbowButton>
           </div>
 
           {/* Main Image */}
-         
-
-<div className="relative flex justify-center items-center h-48 bg-gradient-to-br from-green-500 to-blue-400 rounded-lg overflow-hidden">
-  <Image
-    src={userData.image || "/placeholder.svg"}
-    alt={userData.name || "User Image"}
-    width={40}  // Aspect ratio width for responsiveness
-    height={48} // Aspect ratio height for responsiveness
-    className=" object-fill  w-80 h-48"
-     // Ensures responsive scaling
-  />
-</div>
-
+          <div className="relative flex justify-center items-center h-48 bg-gradient-to-br from-green-500 to-blue-400 rounded-lg overflow-hidden">
+            <Image
+              src={userData.image || "/placeholder.svg"}
+              alt={userData.name || "User Image"}
+              width={40}
+              height={48}
+              className=" object-fill w-80 h-48"
+            />
+          </div>
 
           {/* Abilities */}
           <div className="space-y-3">

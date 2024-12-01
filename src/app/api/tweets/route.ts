@@ -1,4 +1,8 @@
-import { TwitterApi, TweetV2 } from 'twitter-api-v2';
+import { TwitterApi } from 'twitter-api-v2';
+
+interface tweet{
+  tweet: string
+}
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
@@ -9,10 +13,10 @@ export async function GET(request: Request) {
   }
 
   try {
-    const apiKey = process.env.TWITTER_API_KEY;
-    const apiSecretKey = process.env.TWITTER_API_SECRET_KEY;
-    const accessToken = process.env.TWITTER_ACCESS_TOKEN;
-    const accessTokenSecret = process.env.TWITTER_ACCESS_TOKEN_SECRET;
+    const apiKey = process.env.TWITTER_API_KEY_2;
+    const apiSecretKey = process.env.TWITTER_API_SECRET_KEY_2;
+    const accessToken = process.env.TWITTER_ACCESS_TOKEN_2;
+    const accessTokenSecret = process.env.TWITTER_ACCESS_TOKEN_SECRET_2;
 
     if (!apiKey || !apiSecretKey || !accessToken || !accessTokenSecret) {
       return new Response("Twitter OAuth credentials are missing", { status: 500 });
@@ -46,7 +50,7 @@ export async function GET(request: Request) {
     }
 
     // Map and format the tweet data
-    const tweetData = tweets.data.map((tweet: TweetV2) => ({
+    const tweetData = tweets.data.map((tweet : any) => ({
       text: tweet.text,
       created_at: tweet.created_at,
       public_metrics: tweet.public_metrics,
