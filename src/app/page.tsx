@@ -20,25 +20,23 @@ export default function Home() {
     setError("");
 
     try {
-      const response = await axios.get(
-        `/api/twitter?username=${username}`
-      ); // Consolidated API
-      const { name, profile_image_url, public_metrics } = response.data;
+      // Use the correct backend endpoint
+      const response = await axios.get(`/api/twitter?username=${username}`);
 
-      
-      
+      // Destructure the expected data from the API response
+      const { name, profile_image_url, followers_count, tweet_count } = response.data;
 
       // Navigate with query parameters
       router.push(
         `/card?name=${encodeURIComponent(name)}&image=${encodeURIComponent(
           profile_image_url
-        )}&followers=${public_metrics.followers_count}&posts=${
-          public_metrics.tweet_count
-        }`
+        )}&followers=${followers_count}&posts=${tweet_count}`
       );
 
+      // Save the username to the backend (optional)
       await axios.post("/api/saveTwitterUser", { username });
-    } catch (err:any) {
+    } catch (err: any) {
+      // Handle errors properly, extracting error message if available
       setError(
         err.response?.data?.message || "Error fetching Twitter data. Please try again."
       );

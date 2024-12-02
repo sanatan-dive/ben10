@@ -27,7 +27,7 @@ export default function AlienCard() {
     const matchedAlien = aliensData.find((alien: AlienData) => {
       if (followers >= 10000 && posts >= 500) {
         return alien.title === "Legendary";
-      } else if (followers >= 5000 && posts >= 300) {
+      } else if (followers >= 500 && posts >= 300) {
         return alien.title === "Epic";
       } else if (followers >= 1000 || posts >= 100) {
         return alien.title === "Rare";
@@ -46,18 +46,18 @@ export default function AlienCard() {
     );
   };
 
-  const tweets = async (username: string) => {
-    if (!username) {
-      console.error("Username is required for fetching tweets.");
-      return;
-    }
-    try {
-      const response = await axios.get(`/api/tweets?username=${username}`);
-      console.log(response.data); // Do something with the tweet data here if needed
-    } catch (error) {
-      console.error("Error fetching tweets:", error);
-    }
-  };
+  // const tweets = async (username: string) => {
+  //   if (!username) {
+  //     console.error("Username is required for fetching tweets.");
+  //     return;
+  //   }
+  //   try {
+  //     const response = await axios.get(`/api/tweets?username=${username}`);
+  //     console.log(response.data); // Do something with the tweet data here if needed
+  //   } catch (error) {
+  //     console.error("Error fetching tweets:", error);
+  //   }
+  // };
 
   useEffect(() => {
     let name = searchParams?.get("name");
@@ -95,9 +95,9 @@ export default function AlienCard() {
     });
 
     // Call the tweet function once the user data is set
-    if (name) {
-      tweets(name);
-    }
+    // if (name) {
+    //   tweets(name);
+    // }
   }, [searchParams]);
 
   // Dynamically set the background color for the "Alien Title" section

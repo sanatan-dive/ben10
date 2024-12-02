@@ -1,9 +1,3 @@
-import { TwitterApi } from 'twitter-api-v2';
-
-interface tweet{
-  tweet: string
-}
-
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const username = url.searchParams.get("username");
@@ -13,55 +7,76 @@ export async function GET(request: Request) {
   }
 
   try {
-    const apiKey = process.env.TWITTER_API_KEY_2;
-    const apiSecretKey = process.env.TWITTER_API_SECRET_KEY_2;
-    const accessToken = process.env.TWITTER_ACCESS_TOKEN_2;
-    const accessTokenSecret = process.env.TWITTER_ACCESS_TOKEN_SECRET_2;
+    const rapidApiKey = process.env.RAPIDAPI_KEY;
 
-    if (!apiKey || !apiSecretKey || !accessToken || !accessTokenSecret) {
-      return new Response("Twitter OAuth credentials are missing", { status: 500 });
+    if (!rapidApiKey) {
+      return new Response("RapidAPI key is missing", { status: 500 });
     }
 
-    const twitterClient = new TwitterApi({
-      appKey: apiKey,
-      appSecret: apiSecretKey,
-      accessToken,
-      accessSecret: accessTokenSecret,
+    const response = await fetch(`https://twitter-x.p.rapidapi.com/user/tweets?username=${username}&limit=1`, {
+      method: "GET",
+      headers: {
+        "x-rapidapi-host": "twitter-x.p.rapidapi.com",
+        "x-rapidapi-key": rapidApiKey,
+      },
     });
 
-    // Get user by username
-    const user = await twitterClient.v2.userByUsername(username);
-
-    if (!user.data) {
-      return new Response("User not found", { status: 404 });
+    if (!response.ok) {
+      console.error(`Error fetching Tweet data: Status ${response.status}, Message: ${response.statusText}`);
+      return new Response(`Error fetching tweet data: ${response.statusText}`, {
+        status: response.status,
+      });
     }
 
-    const userId = user.data.id;
+    const jsonResponse = await response.json();
+    
+    // Log full response to inspect the structure
+    console.log("API Response:", JSON.stringify(jsonResponse, null, 2)); 
 
-    // Fetch user tweets, excluding replies
-    const tweets = await twitterClient.v2.userTimeline(userId, {
-      'tweet.fields': ['created_at', 'public_metrics', 'text'], // Specify required fields
-      max_results: 10, // Limit to 10 tweets
-      exclude: ['replies'], // Exclude replies
-    });
+    // Ensure proper access to tweet entries
+    const tweetEntries = jsonResponse?.timeline_v2?.timeline?.instructions?.[0]?.entries;
+    
 
-    if (!tweets.data || tweets.data.length === 0) {
-      return new Response("No tweets found for the user", { status: 404 });
+    // Check if tweetEntries exist and contain valid data
+    if (!tweetEntries || tweetEntries.length === 0) {
+      return new Response("No tweets found for this user", { status: 404 });
     }
 
-    // Map and format the tweet data
-    const tweetData = tweets.data.map((tweet : any) => ({
-      text: tweet.text,
-      created_at: tweet.created_at,
-      public_metrics: tweet.public_metrics,
-    }));
+    // Extract tweet data from valid entries
+    const tweetData = tweetEntries.map((entry: any) => {
+      // Check that content structure exists before accessing it
+      const tweet = entry?.content?.itemContent?.tweet_results?.result?.legacy;
+      if (tweet) {
+        return {
+          text: tweet.full_text,
+          created_at: tweet.created_at,
+          likes: tweet.favorite_count,
+          retweets: tweet.retweet_count,
+          replies: tweet.reply_count,
+          language: tweet.lang,
+          conversation_id: tweet.conversation_id_str,
+          author: {
+            name: tweet.user_id_str,
+            tweet_id: tweet.id_str,
+          },
+        };
+      }
+      return null;
+    }).filter(Boolean); // Filter out invalid entries
 
-    return new Response(
-      JSON.stringify(tweetData),
-      { status: 200, headers: { "Content-Type": "application/json" } }
-    );
+    console.log("Tweet Data:", JSON.stringify(tweetData, null, 2));
+
+    // If tweetData is empty, return a message indicating no valid tweets
+    if (tweetData.length === 0) {
+      return new Response("No valid tweet data found", { status: 404 });
+    }
+
+    return new Response(JSON.stringify(tweetData), { status: 200 });
+
   } catch (error: any) {
-    console.error("Error fetching tweets:", error.message || error);
-    return new Response("Error fetching tweets", { status: 500 });
+    console.error("Error fetching tweet data:", error);
+    return new Response(JSON.stringify({ message: "Error fetching tweet data", error: error.message }), {
+      status: 500,
+    });
   }
 }
