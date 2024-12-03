@@ -1,13 +1,13 @@
 "use client";
-
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import axios from "axios";
 import Image from "next/image";
 import { Flame } from "lucide-react";
 import { Card } from "../../../components/ui/card";
-import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
-import aliensData from "./alien.json"; // Import the aliens JSON file
 import { RainbowButton } from "@/components/ui/rainbow-button";
-import axios from "axios";
+import aliensData from "./alien.json"; // Import the aliens JSON file
+import { useKindeAuth } from "@kinde-oss/kinde-auth-nextjs";
 
 interface AlienData {
   name: string;
@@ -17,10 +17,15 @@ interface AlienData {
   description: string;
 }
 
+
+
 export default function AlienCard() {
   const searchParams = useSearchParams();
+  const {user} = useKindeAuth();
+  // console.log(user)
   
   const [userData, setUserData] = useState<any>(null);
+  const [aiDescription, setAiDescription] = useState<string | null>(null); // New state for AI description
 
   // Utility function to assign alien based on user metrics (followers and posts)
   const assignAlien = (followers: number, posts: number): AlienData => {
@@ -45,19 +50,6 @@ export default function AlienCard() {
       }
     );
   };
-
-  // const tweets = async (username: string) => {
-  //   if (!username) {
-  //     console.error("Username is required for fetching tweets.");
-  //     return;
-  //   }
-  //   try {
-  //     const response = await axios.get(`/api/tweets?username=${username}`);
-  //     console.log(response.data); // Do something with the tweet data here if needed
-  //   } catch (error) {
-  //     console.error("Error fetching tweets:", error);
-  //   }
-  // };
 
   useEffect(() => {
     let name = searchParams?.get("name");
@@ -94,10 +86,18 @@ export default function AlienCard() {
       alienDescription: assignedAlien.description,
     });
 
-    // Call the tweet function once the user data is set
+    // Fetch AI-generated description
     // if (name) {
-    //   tweets(name);
+    //   axios
+    //     .post("/api/tweets", { username: name }) // Assuming your API expects the username in the body
+    //     .then((response) => {
+    //       setAiDescription(response.data.summary); // Assuming the API response has a 'summary' field
+    //     })
+    //     .catch((error) => {
+    //       console.error("Error fetching AI summary:", error);
+    //     });
     // }
+
   }, [searchParams]);
 
   // Dynamically set the background color for the "Alien Title" section
@@ -160,11 +160,11 @@ export default function AlienCard() {
           {/* Main Image */}
           <div className="relative flex justify-center items-center h-48 bg-gradient-to-br from-green-500 to-blue-400 rounded-lg overflow-hidden">
             <Image
-              src={userData.image || "/placeholder.svg"}
+              src={user?.picture || "/placeholder.svg"}
               alt={userData.name || "User Image"}
               width={40}
               height={48}
-              className=" object-fill w-80 h-48"
+              className=" object- w-80 h-48"
             />
           </div>
 
@@ -228,7 +228,7 @@ export default function AlienCard() {
 
           {/* Description */}
           <div className="text-xs italic border border-black text-black p-2 rounded bg-[#e8f9e3]">
-            'user description with ai '
+            {aiDescription ? aiDescription : 'Loading AI summary...'}
           </div>
         </div>
       </Card>
