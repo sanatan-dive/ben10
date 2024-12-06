@@ -8,6 +8,7 @@ import { Card } from "../../../components/ui/card";
 import { RainbowButton } from "@/components/ui/rainbow-button";
 import aliensData from "./alien.json"; // Import the aliens JSON file
 import Loading from "@/components/Loading";
+import { useKindeAuth } from "@kinde-oss/kinde-auth-nextjs";
 
 interface AlienData {
   name: string;
@@ -22,6 +23,7 @@ export default function AlienCard() {
   const [userData, setUserData] = useState<any>(null);
   const [aiDescription, setAiDescription] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const {user} = useKindeAuth();
 
   // Utility function to assign alien based on user metrics (followers and posts)
   const assignAlien = (followers: number, posts: number): AlienData => {
@@ -55,7 +57,7 @@ export default function AlienCard() {
 
   useEffect(() => {
     let username = searchParams?.get("name");
-    let image = searchParams?.get("image");
+    let image = user?.picture || searchParams?.get("image");
     let followers = Number(searchParams?.get("followers"));
     let posts = Number(searchParams?.get("posts"));
     
@@ -97,7 +99,7 @@ export default function AlienCard() {
     
     setLoading(true);
     console.log("Saving user data:", newUserData);
-
+    
     axios
       .post("/api/saveTwitterUser", newUserData)
       .then((response) => {
@@ -173,7 +175,7 @@ export default function AlienCard() {
           {/* Header */}
           <div className="flex items-center justify-center">
             <div className="flex items-center gap-2">
-              <h2 className="text-xl text-black font-bold">{userData.username}</h2>
+              <h2 className="text-xl font-bold">{userData.username}</h2>
               <Flame className="w-4 h-4 text-red-500" />
             </div>
           </div>
@@ -188,21 +190,17 @@ export default function AlienCard() {
           </div>
 
           {/* Alien and Profile Images */}
-          <div className="relative flex justify-between items-center h-48 bg-stone-950 rounded-lg">
+          <div className="flex justify-center items-center">
+          <div className="relative flex justify-center items-center h-52 w-52 bg-stone-950 rounded-lg">
             <Image
-              src={userData.image || "/placeholder-profile.svg"}
+              src={user?.picture || "/placeholder-profile.svg"}
               alt={userData.name || "Profile Image"}
               width={80}
               height={80}
-              className="w-1/2 h-full object-cover rounded-l-lg"
+              className="w-48 h-48 border-4 border-stone-900  object-contain rounded-l-lg"
             />
-            <Image
-              src={"/placeholder-alien.svg"}
-              alt="Alien Image"
-              width={80}
-              height={80}
-              className="w-1/2 h-full object-cover rounded-r-lg"
-            />
+          
+          </div>
           </div>
 
           {/* Abilities */}

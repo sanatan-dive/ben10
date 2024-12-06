@@ -10,7 +10,7 @@ export async function GET(): Promise<Response> {
       select: {
         id: true,
         username: true,
-        pfpUrl: true,
+        image: true,
         votesReceived: {
           select: { value: true },
         },
@@ -22,7 +22,7 @@ export async function GET(): Promise<Response> {
       .map((user) => ({
         id: user.id,
         username: user.username,
-        pfpUrl: user.pfpUrl,
+        image: user.image,
         netVotes: user.votesReceived.reduce((sum, vote) => sum + vote.value, 0),
       }))
       .sort((a, b) => b.netVotes - a.netVotes); // Sort by net votes

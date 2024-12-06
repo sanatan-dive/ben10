@@ -9,7 +9,9 @@ import Loading from "@/components/Loading";
 interface User {
   id: number;
   username: string;
-  pfpUrl: string;
+  image: string;
+  alienName: string; // Alien name
+  alienTitle: string; // Alien title (e.g., "Epic", "Legendary")
 }
 
 const Vote = () => {
@@ -18,6 +20,7 @@ const Vote = () => {
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [message, setMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+
 
   const [voterId, setVoterId] = useState<number | null>(null); // State to store voterId
   const [loadingUsers, setLoadingUsers] = useState<boolean>(false); // State to track loading users
@@ -79,8 +82,24 @@ const Vote = () => {
     }
   };
 
+  // Function to determine the background class based on alien title
+  const alienTitleBackgroundClass = (alienTitle: string) => {
+    switch (alienTitle) {
+      case "Common":
+        return "bg-gradient-to-r from-blue-700 to-blue-400";
+      case "Rare":
+        return "bg-gradient-to-r from-red-800 via-red-500 to-red-800";
+      case "Epic":
+        return "bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500";
+      case "Legendary":
+        return "bg-gradient-to-r from-red-500 via-yellow-500 to-green-500 rainbow-bg";
+      default:
+        return "bg-gray-500";
+    }
+  };
+
   return (
-    <div className="bg-black text-green-500 min-h-screen">
+    <div className=" min-h-screen">
       {isLoading ? (
         <div className="flex items-center justify-center min-h-screen">
           <Loading />
@@ -88,24 +107,25 @@ const Vote = () => {
       ) : (
         <div className="min-h-screen flex justify-center flex-col items-center p-4">
           {!isAuthenticated ? (
-            <div className="text-center">
-              <h1 className="text-4xl font-bold mb-4">Welcome to the Voting Portal</h1>
-              <p className="mb-4">Please log in to cast your vote.</p>
-              <LoginLink>
-                <button className="bg-green-500 hover:bg-green-600 text-black px-4 py-2 rounded font-bold">
-                  Log In
-                </button>
-              </LoginLink>
-            </div>
+             <div className="text-white text-center">
+             <div>Please log in to vote</div>
+             <div className="mt-4">
+               <LoginLink>
+                 <button className="bg-gradient-to-r from-[#00a000] to-[#005900]   px-6 py-3 rounded-lg font-bold transition-all duration-300">
+                   Log in
+                 </button>
+               </LoginLink>
+             </div>
+           </div>
           ) : (
             <div className="w-full max-w-2xl">
-              <h2 className="text-3xl font-bold text-center mb-6">Vote for a User</h2>
+              <h2 className="text-3xl font-bold text-white text-center mb-6">Vote for a User</h2>
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => handleSearch(e.target.value)}
                 placeholder="Search for a user..."
-                className="w-full p-2 mb-6 border border-green-600 bg-black text-white rounded focus:outline-none focus:ring-2 focus:ring-green-600"
+                className="w-full p-2 mb-6 border border-green-600 bg-black bg-stone-800 text-white rounded focus:outline-none focus:ring-2 focus:ring-green-600"
               />
               {loadingUsers ? (
                 <div className="flex justify-center">
@@ -121,11 +141,21 @@ const Vote = () => {
                   >
                     <div className="flex items-center">
                       <img
-                        src={user.pfpUrl || "/default-avatar.png"} // fallback if no pfpUrl
+                        src={user.image || "/default-avatar.png"} // fallback if no pfpUrl
                         alt={`${user.username}'s profile`}
-                        className="w-16 h-16 rounded-full border-2"
+                        className="w-14 h-14 rounded-full border-2"
                       />
-                      <p className="ml-4 font-bold text-lg">{user.username}</p>
+                      <div className="ml-4">
+                        <p className="font-bold text-lg">{user.username}</p>
+                        <div className="flex gap-2">
+                          <p className="text-md  text-green-400">{user.alienName}</p>
+                          <p
+                            className={`text-sm font-bold flex justify-center items-center ${alienTitleBackgroundClass(user.alienTitle)} text-white px-2  rounded-md`}
+                          >
+                            {user.alienTitle}
+                          </p>
+                        </div>
+                      </div>
                     </div>
                     <div className="flex space-x-4">
                       <button
