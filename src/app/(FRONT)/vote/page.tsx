@@ -20,10 +20,12 @@ const Vote = () => {
   const [searchQuery, setSearchQuery] = useState("");
 
   const [voterId, setVoterId] = useState<number | null>(null); // State to store voterId
+  const [loadingUsers, setLoadingUsers] = useState<boolean>(false); // State to track loading users
 
   // Fetch users
   useEffect(() => {
     const fetchUsers = async () => {
+      setLoadingUsers(true); // Start loading
       try {
         const response = await axios.get("/api/getAllUser");
         setUsers(response.data);
@@ -36,6 +38,8 @@ const Vote = () => {
         }
       } catch (error) {
         setMessage("Unable to fetch users.");
+      } finally {
+        setLoadingUsers(false); // End loading
       }
     };
     fetchUsers();
@@ -103,7 +107,11 @@ const Vote = () => {
                 placeholder="Search for a user..."
                 className="w-full p-2 mb-6 border border-green-600 bg-black text-white rounded focus:outline-none focus:ring-2 focus:ring-green-600"
               />
-              {filteredUsers.length === 0 ? (
+              {loadingUsers ? (
+                <div className="flex justify-center">
+                  <Loading />
+                </div>
+              ) : filteredUsers.length === 0 ? (
                 <p className="text-center">No users available to vote for.</p>
               ) : (
                 filteredUsers.map((user) => (
