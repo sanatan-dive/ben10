@@ -7,7 +7,7 @@ import { Flame } from "lucide-react";
 import { Card } from "../../../components/ui/card";
 import { RainbowButton } from "@/components/ui/rainbow-button";
 import aliensData from "./alien.json"; // Import the aliens JSON file
-import { useKindeAuth } from "@kinde-oss/kinde-auth-nextjs";
+import Loading from "@/components/Loading";
 
 interface AlienData {
   name: string;
@@ -17,65 +17,74 @@ interface AlienData {
   description: string;
 }
 
-
-
 export default function AlienCard() {
   const searchParams = useSearchParams();
-  const {user} = useKindeAuth();
-  // console.log(user)
-  
   const [userData, setUserData] = useState<any>(null);
-  const [aiDescription, setAiDescription] = useState<string | null>(null); // New state for AI description
+  const [aiDescription, setAiDescription] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
   // Utility function to assign alien based on user metrics (followers and posts)
   const assignAlien = (followers: number, posts: number): AlienData => {
-    const matchedAlien = aliensData.find((alien: AlienData) => {
-      if (followers >= 10000 && posts >= 500) {
-        return alien.title === "Legendary";
-      } else if (followers >= 500 && posts >= 300) {
-        return alien.title === "Epic";
-      } else if (followers >= 1000 || posts >= 100) {
-        return alien.title === "Rare";
-      }
-      return alien.title === "Common";
-    });
+    let eligibleAliens: AlienData[] = [];
 
-    return (
-      matchedAlien || {
-        name: "Wildmutt",
-        title: "Common",
-        type: "Beast",
-        power: "Enhanced Senses",
-        description: "A wild, beast-like alien with extraordinary senses.",
-      }
-    );
+    if (followers >= 10000 && posts >= 500) {
+      eligibleAliens = aliensData.filter((alien: AlienData) => alien.title === "Legendary");
+    } else if (followers >= 500 && posts >= 300) {
+      eligibleAliens = aliensData.filter((alien: AlienData) => alien.title === "Epic");
+    } else if (followers >= 1000 || posts >= 100) {
+      eligibleAliens = aliensData.filter((alien: AlienData) => alien.title === "Rare");
+    } else {
+      eligibleAliens = aliensData.filter((alien: AlienData) => alien.title === "Common");
+    }
+
+    // Randomly select one alien from the filtered list
+    if (eligibleAliens.length > 0) {
+      const randomIndex = Math.floor(Math.random() * eligibleAliens.length);
+      return eligibleAliens[randomIndex];
+    }
+
+    // Default alien if no match found
+    return {
+      name: "Wildmutt",
+      title: "Common",
+      type: "Beast",
+      power: "Enhanced Senses",
+      description: "A wild, beast-like alien with extraordinary senses.",
+    };
   };
 
   useEffect(() => {
-    let name = searchParams?.get("name");
+    let username = searchParams?.get("name");
     let image = searchParams?.get("image");
     let followers = Number(searchParams?.get("followers"));
     let posts = Number(searchParams?.get("posts"));
+    
+  
+    console.log(username)
 
-    // If searchParams are not available, use localStorage
-    if (!name) {
-      const storedUsername = localStorage.getItem("username");
-      if (storedUsername) {
-        name = storedUsername;
-        image = "/default-avatar.png"; // Default avatar if no image
-        followers = 0; // Default followers
-        posts = 0; // Default posts
-      } else {
-        console.error("Username not found in searchParams or localStorage.");
-        return;
-      }
+    if (!username) {
+      console.error("Missing username");
+      return;
     }
+   
+    axios
+      .get(`/api/getUser?username=${username}`)
+      .then((response) => {
+        const user = response.data;
+        setUserData(user); // Set the user data from the database
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching user data:", error);
+        setLoading(false);
+      });
+   
 
     // Assign alien based on user data
     const assignedAlien = assignAlien(followers, posts);
 
-    setUserData({
-      name,
+    const newUserData = {
+      username,
       image,
       followers,
       posts,
@@ -84,7 +93,22 @@ export default function AlienCard() {
       alienType: assignedAlien.type,
       alienPower: assignedAlien.power,
       alienDescription: assignedAlien.description,
-    });
+    };
+    
+    setLoading(true);
+    console.log("Saving user data:", newUserData);
+
+    axios
+      .post("/api/saveTwitterUser", newUserData)
+      .then((response) => {
+        console.log("User data saved successfully:", response.data);
+        setUserData(response.data.user); // Assuming response contains the full user object
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error saving user data:", error);
+        setLoading(false);
+      });
 
     // Fetch AI-generated description
     // if (name) {
@@ -97,6 +121,10 @@ export default function AlienCard() {
     //       console.error("Error fetching AI summary:", error);
     //     });
     // }
+
+
+    // Save user data by calling the API
+    
 
   }, [searchParams]);
 
@@ -116,8 +144,10 @@ export default function AlienCard() {
     }
   };
 
-  const calculatePostFrequency = (posts: number, days: number) =>
-    (posts / days).toFixed(2);
+  const calculatePostFrequency = (posts: number, days: number) => {
+    if (days === 0) return "0 Posts/Day"; // Prevent division by zero
+    return (posts / days).toFixed(2);
+  };
 
   const getFlameCount = (alienTitle: string) => {
     switch (alienTitle) {
@@ -134,7 +164,7 @@ export default function AlienCard() {
     }
   };
 
-  if (!userData) return <p>Loading...</p>;
+  if (loading || !userData) return <div className="flex items-center min-h-screen justify-center"><Loading  /></div> ; // Show loading until data is available
 
   return (
     <div className="p-8 mt-28 flex items-center justify-center">
@@ -143,7 +173,7 @@ export default function AlienCard() {
           {/* Header */}
           <div className="flex items-center justify-center">
             <div className="flex items-center gap-2">
-              <h2 className="text-xl text-black font-bold">{userData.name}</h2>
+              <h2 className="text-xl text-black font-bold">{userData.username}</h2>
               <Flame className="w-4 h-4 text-red-500" />
             </div>
           </div>
@@ -157,14 +187,21 @@ export default function AlienCard() {
             </RainbowButton>
           </div>
 
-          {/* Main Image */}
-          <div className="relative flex justify-center items-center h-48 bg-gradient-to-br from-green-500 to-blue-400 rounded-lg overflow-hidden">
+          {/* Alien and Profile Images */}
+          <div className="relative flex justify-between items-center h-48 bg-stone-950 rounded-lg">
             <Image
-              src={user?.picture || "/placeholder.svg"}
-              alt={userData.name || "User Image"}
-              width={40}
-              height={48}
-              className=" object- w-80 h-48"
+              src={userData.image || "/placeholder-profile.svg"}
+              alt={userData.name || "Profile Image"}
+              width={80}
+              height={80}
+              className="w-1/2 h-full object-cover rounded-l-lg"
+            />
+            <Image
+              src={"/placeholder-alien.svg"}
+              alt="Alien Image"
+              width={80}
+              height={80}
+              className="w-1/2 h-full object-cover rounded-r-lg"
             />
           </div>
 
@@ -210,7 +247,7 @@ export default function AlienCard() {
               <div>
                 <span className="font-bold text-black">Followers</span>
                 <div className="flex items-center gap-1 mt-1">
-                  <div className="w-4 h-4 bg-gradient-to-br from-yellow-600 to-yellow-400  rounded-full" />
+                  <div className="w-4 h-4 bg-gradient-to-br from-yellow-600 to-yellow-400 rounded-full" />
                   <span className="text-black">{userData.followers}</span>
                 </div>
               </div>

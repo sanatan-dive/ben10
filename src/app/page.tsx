@@ -8,9 +8,10 @@ import { motion } from "framer-motion";
 import Loading from "@/components/Loading";
 
 export default function Home() {
-  const [username, setUsername] = useState("");
+  const [username, setusername] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [authResolved, setAuthResolved] = useState(false); // Track if auth is resolved
   const router = useRouter();
   const { user, isAuthenticated, isLoading } = useKindeAuth();
 
@@ -20,23 +21,17 @@ export default function Home() {
     setError("");
 
     try {
-      // Use the correct backend endpoint
       const response = await axios.get(`/api/twitter?username=${username}`);
-
-      // Destructure the expected data from the API response
       const { name, profile_image_url, followers_count, tweet_count } = response.data;
 
-      // Navigate with query parameters
       router.push(
         `/card?name=${encodeURIComponent(name)}&image=${encodeURIComponent(
           profile_image_url
         )}&followers=${followers_count}&posts=${tweet_count}`
       );
 
-      // Save the username to the backend (optional)
-      await axios.post("/api/saveTwitterUser", { username });
+      
     } catch (err: any) {
-      // Handle errors properly, extracting error message if available
       setError(
         err.response?.data?.message || "Error fetching Twitter data. Please try again."
       );
@@ -46,20 +41,20 @@ export default function Home() {
   };
 
   useEffect(() => {
-    if (isAuthenticated && user?.given_name) {
-      setUsername(user.given_name);
+    // Wait for auth to resolve
+    if (!isLoading) {
+      setAuthResolved(true);
+      if (isAuthenticated && user?.given_name) {
+        setusername(user.given_name);
+      }
     }
-  }, [isAuthenticated, user]);
+  }, [isLoading, isAuthenticated, user]);
 
-  if (isLoading || isSubmitting) {
-    return (
-      <div className="min-h-screen flex justify-center items-center bg-black text-white">
-        <Loading />
-      </div>
-    );
-  }
-
-  return (
+  return isLoading || isSubmitting || !authResolved ? (
+    <div className="min-h-screen flex justify-center items-center bg-black text-white">
+      <Loading />
+    </div>
+  ) : (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -73,7 +68,7 @@ export default function Home() {
         className="flex flex-col items-center p-8 rounded-lg shadow-lg"
       >
         <h1 className="text-3xl font-bold mb-4 text-center">
-          Enter Your Twitter Username
+          Enter Your Twitter Id
         </h1>
         <form onSubmit={handleSubmit} className="flex flex-col items-center">
           <motion.input
@@ -81,9 +76,15 @@ export default function Home() {
             animate={{ scale: 1 }}
             whileFocus={{ scale: 1.05 }}
             type="text"
-            placeholder="Twitter Username"
+            placeholder="Twitter username"
             value={username.trim()}
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={(e) => {
+              const input = e.target.value;
+              // Allow only valid Twitter username characters
+              if (/^[a-zA-Z0-9_]*$/.test(input) || input === "") {
+                setusername(input);
+              }
+            }}
             className="p-2 mb-4 w-64 border border-gray-400 rounded-md text-white bg-stone-800 focus:outline-none focus:ring-2 focus:ring-[#00ff00] focus:ring-offset-2"
             required
           />
