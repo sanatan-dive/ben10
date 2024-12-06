@@ -26,12 +26,18 @@ export async function POST(request: Request): Promise<Response> {
       return new Response("Voter or voted user does not exist", { status: 404 });
     }
 
-    // Save the vote
-    const vote = await prisma.vote.create({
-      data: {
+    // Upsert the vote: update if it exists, otherwise create it
+    const vote = await prisma.vote.upsert({
+      where: {
+        voterId_votedUserId: { voterId, votedUserId },
+      },
+      update: {
+        value, // Update the vote value if the record already exists
+      },
+      create: {
         voterId,
         votedUserId,
-        value,
+        value, // Create a new vote if no existing record
       },
     });
 

@@ -5,34 +5,43 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Loading from "@/components/Loading";
 
-// Define the User interface to specify the shape of the data
+// Define the User interface
 interface User {
   id: number;
   username: string;
   pfpUrl: string;
 }
 
-const Vote = ({ voterId }: { voterId: number }) => {
-  const { isAuthenticated, isLoading } = useKindeAuth();
+const Vote = () => {
+  const { isAuthenticated, isLoading, user } = useKindeAuth(); // Get user info from KindeAuth
   const [users, setUsers] = useState<User[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [message, setMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
 
+  const [voterId, setVoterId] = useState<number | null>(null); // State to store voterId
+
+  // Fetch users
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         const response = await axios.get("/api/getAllUser");
         setUsers(response.data);
-        setFilteredUsers(response.data); // Initialize filtered list
+        setFilteredUsers(response.data);
+
+        // Set the voterId from the logged-in user
+        const currentUser = response.data.find((user: User) => user.id === user?.id);
+        if (currentUser) {
+          setVoterId(currentUser.id);
+        }
       } catch (error) {
-        console.error("Error fetching users:", error);
+        setMessage("Unable to fetch users.");
       }
     };
-
     fetchUsers();
-  }, []);
+  }, [user]);
 
+  // Filter users by search query
   const handleSearch = (query: string) => {
     setSearchQuery(query);
     const filtered = users.filter((user) =>
@@ -41,16 +50,28 @@ const Vote = ({ voterId }: { voterId: number }) => {
     setFilteredUsers(filtered);
   };
 
+  // Handle voting
   const handleVote = async (votedUserId: number, value: number) => {
+    if (!voterId) {
+      setMessage("You must be logged in to vote.");
+      return;
+    }
+
+    console.log("Sending vote:", { voterId, votedUserId, value });
     try {
+      setMessage(""); // Clear any previous messages
       const response = await axios.post("/api/vote", {
         voterId,
         votedUserId,
         value,
       });
-      setMessage(response.data.message);
-    } catch (error) {
-      setMessage("Error recording vote.");
+      console.log("Vote recorded:", response.data);
+      setMessage(response.data.message || "Vote recorded successfully.");
+    } catch (error: any) {
+      console.error("Error recording vote:", error);
+      setMessage(
+        error.response?.data || "An error occurred while recording your vote."
+      );
     }
   };
 
@@ -64,9 +85,7 @@ const Vote = ({ voterId }: { voterId: number }) => {
         <div className="min-h-screen flex justify-center flex-col items-center p-4">
           {!isAuthenticated ? (
             <div className="text-center">
-              <h1 className="text-4xl font-bold mb-4">
-                Welcome to the Voting Portal
-              </h1>
+              <h1 className="text-4xl font-bold mb-4">Welcome to the Voting Portal</h1>
               <p className="mb-4">Please log in to cast your vote.</p>
               <LoginLink>
                 <button className="bg-green-500 hover:bg-green-600 text-black px-4 py-2 rounded font-bold">
@@ -76,11 +95,7 @@ const Vote = ({ voterId }: { voterId: number }) => {
             </div>
           ) : (
             <div className="w-full max-w-2xl">
-              <h2 className="text-3xl font-bold text-center mb-6">
-                Vote for a User
-              </h2>
-
-              {/* Search input */}
+              <h2 className="text-3xl font-bold text-center mb-6">Vote for a User</h2>
               <input
                 type="text"
                 value={searchQuery}
@@ -88,7 +103,6 @@ const Vote = ({ voterId }: { voterId: number }) => {
                 placeholder="Search for a user..."
                 className="w-full p-2 mb-6 border border-green-600 bg-black text-white rounded focus:outline-none focus:ring-2 focus:ring-green-600"
               />
-
               {filteredUsers.length === 0 ? (
                 <p className="text-center">No users available to vote for.</p>
               ) : (
@@ -99,9 +113,9 @@ const Vote = ({ voterId }: { voterId: number }) => {
                   >
                     <div className="flex items-center">
                       <img
-                        src={user.pfpUrl}
+                        src={user.pfpUrl || "/default-avatar.png"} // fallback if no pfpUrl
                         alt={`${user.username}'s profile`}
-                        className="w-16 h-16 rounded-full border-2 "
+                        className="w-16 h-16 rounded-full border-2"
                       />
                       <p className="ml-4 font-bold text-lg">{user.username}</p>
                     </div>
@@ -122,11 +136,8 @@ const Vote = ({ voterId }: { voterId: number }) => {
                   </div>
                 ))
               )}
-
               {message && (
-                <p className="text-center mt-6 text-lg font-semibold">
-                  {message}
-                </p>
+                <p className="text-center mt-6 text-lg font-semibold">{message}</p>
               )}
             </div>
           )}
