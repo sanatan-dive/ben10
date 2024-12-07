@@ -8,7 +8,7 @@ import { Card } from "../../../components/ui/card";
 import { RainbowButton } from "@/components/ui/rainbow-button";
 import aliensData from "./alien.json"; // Import the aliens JSON file
 import Loading from "@/components/Loading";
-import { useKindeAuth } from "@kinde-oss/kinde-auth-nextjs";
+import { LoginLink, RegisterLink, useKindeAuth } from "@kinde-oss/kinde-auth-nextjs";
 
 interface AlienData {
   name: string;
@@ -23,7 +23,7 @@ export default function AlienCard() {
   const [userData, setUserData] = useState<any>(null);
   const [aiDescription, setAiDescription] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const {user} = useKindeAuth();
+  const { user,isAuthenticated } = useKindeAuth();
 
   // Utility function to assign alien based on user metrics (followers and posts)
   const assignAlien = (followers: number, posts: number): AlienData => {
@@ -57,96 +57,76 @@ export default function AlienCard() {
 
   useEffect(() => {
     let username = searchParams?.get("name");
-    let image = user?.picture || searchParams?.get("image");
+    let image = user?.picture || searchParams?.get("image"); // Use user.picture if logged in, else fallback to searchParams image
     let followers = Number(searchParams?.get("followers"));
     let posts = Number(searchParams?.get("posts"));
-  
-    console.log(username);
   
     if (!username) {
       console.error("Missing username");
       return;
     }
   
-    // Fetch user data
+    // Assign alien based on user metrics
+    const assignedAlien = assignAlien(followers, posts);
+  
+    // Prepare user data object
+    const newUserData = {
+      username,
+      image: user?.picture || image,
+      followers,
+      posts,
+      alienName: assignedAlien.name,
+      alienTitle: assignedAlien.title,
+      alienType: assignedAlien.type,
+      alienPower: assignedAlien.power,
+      alienDescription: assignedAlien.description,
+    };
+  
+    setLoading(true);
+  
+    // Fetch user data from the backend
     axios
       .get(`/api/getUser?username=${username}`)
       .then((response) => {
-        const user = response.data;
-        setUserData(user); // Set the user data from the database
-        setLoading(false);
+        setUserData(response.data); // Set the user data from the database
       })
       .catch((error) => {
         console.error("Error fetching user data:", error);
-        setLoading(false);
       });
   
-   
-
-    // Assign alien based on user data
-    const assignedAlien = assignAlien(followers, posts);
-
-  const newUserData = {
-    username,
-    image, // Save the image from the appropriate source
-    followers,
-    posts,
-    alienName: assignedAlien.name,
-    alienTitle: assignedAlien.title,
-    alienType: assignedAlien.type,
-    alienPower: assignedAlien.power,
-    alienDescription: assignedAlien.description,
-  };
-    
-  setLoading(true);
-  console.log("Saving/updating user data:");
-  if (user?.picture) {
-    // If logged in, update the image to use KindeAuth's picture
-    newUserData.image = user.picture;
-    axios
-      .put(`/api/updateTwitterUser`, newUserData)
-      .then((response) => {
-        console.log("User data updated successfully:", response.data);
-        setUserData(response.data.user); // Update the user data in the state
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error updating user data:", error);
-        setLoading(false);
-      });
-  } else {
-    // If not logged in, save the image provided in searchParams
-    axios
-      .post("/api/saveTwitterUser", newUserData)
-      .then((response) => {
-        console.log("User data saved successfully:", response.data);
-        setUserData(response.data.user); // Update the user data in the state
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error saving user data:", error);
-        setLoading(false);
-      });
-  }
-
-
-    // Fetch AI-generated description
-    // if (name) {
-    //   axios
-    //     .post("/api/tweets", { username: name }) // Assuming your API expects the username in the body
-    //     .then((response) => {
-    //       setAiDescription(response.data.summary); // Assuming the API response has a 'summary' field
-    //     })
-    //     .catch((error) => {
-    //       console.error("Error fetching AI summary:", error);
-    //     });
-    // }
-
-
-    // Save user data by calling the API
-    
-
-  }, [searchParams]);
+    if (isAuthenticated) {
+      // Save or update user data in the backend
+      axios
+        .put("/api/updateTwitterUser", newUserData)
+        .then((response) => {
+          setUserData(response.data.user); // Update the local user data with the response
+        })
+        .catch((error) => {
+          if (error.response?.status === 500) {
+            console.warn("PUT request failed, falling back to POST.");
+            axios
+              .post("/api/saveTwitterUser", newUserData)
+              .then((response) => {
+                setUserData(response.data.user); // Update the local user data with the response
+              })
+              .catch((postError) => {
+                console.error("Error saving user data with POST:", postError);
+              });
+          } else {
+            console.error("Error in PUT request:", error);
+          }
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    } else {
+      // If not authenticated, just set the prepared user data
+      setUserData(newUserData);
+      setLoading(false);
+    }
+  }, [searchParams, user, isAuthenticated]);
+  
+  
 
   // Dynamically set the background color for the "Alien Title" section
   const alienTitleBackgroundClass = () => {
@@ -184,12 +164,12 @@ export default function AlienCard() {
     }
   };
 
-  if (loading || !userData) return <div className="flex items-center min-h-screen justify-center"><Loading  /></div> ; // Show loading until data is available
+  if (loading || !userData) return <div className="flex items-center min-h-screen justify-center"><Loading /></div>; // Show loading until data is available
 
   return (
-    <div className="p-8 mt-28 flex items-center justify-center">
+    <div className="p-8 mt-28 flex flex-col items-center justify-center">
       <Card className="w-[400px] p-2 bg-gradient-to-b from-stone-950 to-black rounded-lg shadow-xl">
-        <div className=" bg-gradient-to-b from-[#26811ecf] to-[#4ff04632] rounded-lg p-3 space-y-2">
+        <div className="bg-gradient-to-b from-[#26811ecf] to-[#4ff04632] rounded-lg p-3 space-y-2">
           {/* Header */}
           <div className="flex items-center justify-center">
             <div className="flex items-center gap-2">
@@ -209,16 +189,15 @@ export default function AlienCard() {
 
           {/* Alien and Profile Images */}
           <div className="flex justify-center items-center">
-          <div className="relative flex justify-center items-center h-52 w-52 bg-stone-950 rounded-lg">
-            <Image
-              src={user?.picture || userData.image || "/placeholder-profile.svg"}
-              alt={userData.name || "Profile Image"}
-              width={80}
-              height={80}
-              className="w-48 h-48 border-4 border-stone-900  object-contain rounded-l-lg"
-            />
-          
-          </div>
+            <div className="relative flex justify-center items-center h-52 w-52 bg-stone-950 rounded-lg">
+              <Image
+                src={user?.picture || userData.image || "/placeholder-profile.svg"}
+                alt={userData.name || "Profile Image"}
+                width={80}
+                height={80}
+                className="w-48 h-48 border-4 border-stone-900  object-contain rounded-l-lg"
+              />
+            </div>
           </div>
 
           {/* Abilities */}
@@ -284,7 +263,19 @@ export default function AlienCard() {
             {aiDescription ? aiDescription : 'Loading AI summary...'}
           </div>
         </div>
+        
       </Card>
+      {!isAuthenticated && (
+        <div className="mt-4 flex flex-col font-bold gap-2 text-center">
+          Please log in to save your data and enhance your profile!
+          <LoginLink>
+              <button className="bg-gradient-to-r from-[#00a000] to-[#005900]   px-4 py-1.5 rounded-lg font-bold transition-all duration-300">
+                Log in
+              </button>
+            </LoginLink>
+        </div>
+      )}
     </div>
+    
   );
 }

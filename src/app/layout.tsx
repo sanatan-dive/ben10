@@ -57,7 +57,9 @@ export default function RootLayout({
             <FloatingNav
               navItems={[
                 { name: "Home", link: "/" },
+                {name:"Profile", link:"/profile"},
                 { name: "Vote", link: "/vote" },
+                
               
                 { name: "LeaderBoard", link: "/leaderboard" },
 

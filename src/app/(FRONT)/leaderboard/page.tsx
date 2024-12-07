@@ -52,7 +52,7 @@ const Leaderboard = () => {
           </div>
         </div>
       ) : (
-        <div className="w-full max-w-2xl p-6 bg-stone-900 rounded-xl shadow-xl border-2 border-green-600">
+        <div className="w-full max-w-2xl p-6 bg-stone-900 rounded-xl shadow-xl border border-green-600">
           <h2 className="text-4xl font-extrabold text-center text-white mb-6">Leaderboard</h2>
           {loadingUsers ? (
             <div>
@@ -65,7 +65,7 @@ const Leaderboard = () => {
               {leaderboard.map((user) => (
                 <li
                   key={user.id}
-                  className="flex items-center justify-between p-4 bg-black border-2  rounded-lg shadow-md"
+                  className="flex items-center justify-between p-4 bg-stone-950 border-2  rounded-lg shadow-md"
                 >
                   <div className="flex items-center space-x-4">
                     <img

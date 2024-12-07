@@ -4,6 +4,7 @@ import { LoginLink, useKindeAuth } from "@kinde-oss/kinde-auth-nextjs";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Loading from "@/components/Loading";
+import { ArrowUpCircle, ArrowDownCircle } from "lucide-react"; // Icons for upvote and downvote
 
 // Define the User interface
 interface User {
@@ -20,8 +21,6 @@ const Vote = () => {
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [message, setMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-
-
   const [voterId, setVoterId] = useState<number | null>(null); // State to store voterId
   const [loadingUsers, setLoadingUsers] = useState<boolean>(false); // State to track loading users
 
@@ -107,16 +106,16 @@ const Vote = () => {
       ) : (
         <div className="min-h-screen flex justify-center flex-col items-center p-4">
           {!isAuthenticated ? (
-             <div className="text-white text-center">
-             <div>Please log in to vote</div>
-             <div className="mt-4">
-               <LoginLink>
-                 <button className="bg-gradient-to-r from-[#00a000] to-[#005900]   px-6 py-3 rounded-lg font-bold transition-all duration-300">
-                   Log in
-                 </button>
-               </LoginLink>
-             </div>
-           </div>
+            <div className="text-white text-center">
+              <div>Please log in to vote</div>
+              <div className="mt-4">
+                <LoginLink>
+                  <button className="bg-gradient-to-r from-[#00a000] to-[#005900]   px-6 py-3 rounded-lg font-bold transition-all duration-300">
+                    Log in
+                  </button>
+                </LoginLink>
+              </div>
+            </div>
           ) : (
             <div className="w-full max-w-2xl">
               <h2 className="text-3xl font-bold text-white text-center mb-6">Vote for a User</h2>
@@ -148,9 +147,11 @@ const Vote = () => {
                       <div className="ml-4">
                         <p className="font-bold text-lg">{user.username}</p>
                         <div className="flex gap-2">
-                          <p className="text-md  text-green-400">{user.alienName}</p>
+                          <p className="text-md text-green-400">{user.alienName}</p>
                           <p
-                            className={`text-sm font-bold flex justify-center items-center ${alienTitleBackgroundClass(user.alienTitle)} text-white px-2  rounded-md`}
+                            className={`text-sm font-bold flex justify-center items-center ${alienTitleBackgroundClass(
+                              user.alienTitle
+                            )} text-white px-2  rounded-md`}
                           >
                             {user.alienTitle}
                           </p>
@@ -158,18 +159,14 @@ const Vote = () => {
                       </div>
                     </div>
                     <div className="flex space-x-4">
-                      <button
+                      <ArrowUpCircle
+                        className="w-8 h-8 cursor-pointer text-green-500 hover:text-green-700"
                         onClick={() => handleVote(user.id, 1)}
-                        className="bg-[#32CD32] hover:bg-[#228B22] text-black px-4 py-2 rounded font-bold"
-                      >
-                        Upvote
-                      </button>
-                      <button
+                      />
+                      <ArrowDownCircle
+                        className="w-8 h-8 cursor-pointer text-red-500 hover:text-red-700"
                         onClick={() => handleVote(user.id, -1)}
-                        className="bg-[#FF6347] hover:bg-[#CD5C5C] text-black px-4 py-2 rounded font-bold"
-                      >
-                        Downvote
-                      </button>
+                      />
                     </div>
                   </div>
                 ))

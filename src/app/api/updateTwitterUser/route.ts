@@ -4,56 +4,27 @@ const prisma = new PrismaClient();
 
 export async function PUT(request: Request): Promise<Response> {
   try {
-    // Parse the request body
-    const {
-      username,
-      image,
-      followers,
-      posts,
-      alienName,
-      alienTitle,
-      alienType,
-      alienPower,
-      alienDescription,
-    } = await request.json();
+    const { username, image, followers, posts } = await request.json();
 
-    // Validate the input data
-    if (!username || !alienName || !alienTitle || !alienType || !alienPower || !alienDescription) {
+    if (!username || !image) {
       return new Response("Invalid data", { status: 400 });
     }
 
-    // Update or create user and alien data in the database
-    const user = await prisma.user.upsert({
+    // Update only the image field for the given username
+    const user = await prisma.user.update({
       where: { username },
-      update: {
-        image: image || "/default-avatar.png", // Update to provided image or default
+      data: { image,
         followers,
-        posts,
-        alienName,
-        alienTitle,
-        alienType,
-        alienPower,
-        alienDescription,
-      },
-      create: {
-        username,
-        image: image || "/default-avatar.png", // Use default if no image
-        followers,
-        posts,
-        alienName,
-        alienTitle,
-        alienType,
-        alienPower,
-        alienDescription,
-      },
+        posts
+       },
     });
 
     return new Response(
-      JSON.stringify({ message: "User and Alien data updated successfully", user }),
+      JSON.stringify({ message: "User picture updated successfully", user }),
       { status: 200, headers: { "Content-Type": "application/json" } }
     );
   } catch (error) {
-    console.error("Error updating user and alien data:", error);
+    console.error("Error updating user picture:", error);
     return new Response("Internal server error", { status: 500 });
   }
 }
