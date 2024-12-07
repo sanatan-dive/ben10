@@ -94,7 +94,7 @@ export default function AlienCard() {
         console.error("Error fetching user data:", error);
       });
   
-    if (isAuthenticated) {
+    if (isAuthenticated && user?.given_name === username) {
       // Save or update user data in the backend
       axios
         .put("/api/updateTwitterUser", newUserData)

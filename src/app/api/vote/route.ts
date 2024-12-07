@@ -11,10 +11,7 @@ export async function POST(request: Request): Promise<Response> {
       return new Response("Invalid input", { status: 400 });
     }
 
-    // Prevent self-voting
-    if (voterId === votedUserId) {
-      return new Response("You cannot vote for yourself", { status: 400 });
-    }
+  
 
     // Check if the voter and voted user exist
     const [voter, votedUser] = await Promise.all([

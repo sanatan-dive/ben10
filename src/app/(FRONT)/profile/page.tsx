@@ -77,10 +77,10 @@ const Profile = () => {
 
   // Render profile
   return (
-    <div className="p-8 mt-2 flex flex-col items-center min-h-screen justify-center">
+    <div className="p-8  flex flex-col  items-center min-h-screen justify-center">
         {!isAuthenticated ?(
-             <div className="flex justify-center flex-col items-center ">
-             <h2 className="text-xl font-bold">Please log in to access your profile!</h2>
+             <div className="flex justify-center gap-4 flex-col items-center ">
+             <h2 className="text-md ">Please log in to access your profile!</h2>
              <LoginLink>
                    <button className="bg-gradient-to-r from-[#00a000] to-[#005900]  px-6 py-3 rounded-lg font-bold transition-all duration-300">
                      Log in
