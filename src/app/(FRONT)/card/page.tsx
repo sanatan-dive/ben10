@@ -60,15 +60,15 @@ export default function AlienCard() {
     let image = user?.picture || searchParams?.get("image");
     let followers = Number(searchParams?.get("followers"));
     let posts = Number(searchParams?.get("posts"));
-    
   
-    console.log(username)
-
+    console.log(username);
+  
     if (!username) {
       console.error("Missing username");
       return;
     }
-   
+  
+    // Fetch user data
     axios
       .get(`/api/getUser?username=${username}`)
       .then((response) => {
@@ -80,37 +80,55 @@ export default function AlienCard() {
         console.error("Error fetching user data:", error);
         setLoading(false);
       });
+  
    
 
     // Assign alien based on user data
     const assignedAlien = assignAlien(followers, posts);
 
-    const newUserData = {
-      username,
-      image,
-      followers,
-      posts,
-      alienName: assignedAlien.name,
-      alienTitle: assignedAlien.title,
-      alienType: assignedAlien.type,
-      alienPower: assignedAlien.power,
-      alienDescription: assignedAlien.description,
-    };
+  const newUserData = {
+    username,
+    image, // Save the image from the appropriate source
+    followers,
+    posts,
+    alienName: assignedAlien.name,
+    alienTitle: assignedAlien.title,
+    alienType: assignedAlien.type,
+    alienPower: assignedAlien.power,
+    alienDescription: assignedAlien.description,
+  };
     
-    setLoading(true);
-    console.log("Saving user data:", newUserData);
-    
+  setLoading(true);
+  console.log("Saving/updating user data:");
+  if (user?.picture) {
+    // If logged in, update the image to use KindeAuth's picture
+    newUserData.image = user.picture;
+    axios
+      .put(`/api/updateTwitterUser`, newUserData)
+      .then((response) => {
+        console.log("User data updated successfully:", response.data);
+        setUserData(response.data.user); // Update the user data in the state
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error updating user data:", error);
+        setLoading(false);
+      });
+  } else {
+    // If not logged in, save the image provided in searchParams
     axios
       .post("/api/saveTwitterUser", newUserData)
       .then((response) => {
         console.log("User data saved successfully:", response.data);
-        setUserData(response.data.user); // Assuming response contains the full user object
+        setUserData(response.data.user); // Update the user data in the state
         setLoading(false);
       })
       .catch((error) => {
         console.error("Error saving user data:", error);
         setLoading(false);
       });
+  }
+
 
     // Fetch AI-generated description
     // if (name) {
@@ -193,7 +211,7 @@ export default function AlienCard() {
           <div className="flex justify-center items-center">
           <div className="relative flex justify-center items-center h-52 w-52 bg-stone-950 rounded-lg">
             <Image
-              src={user?.picture || "/placeholder-profile.svg"}
+              src={user?.picture || userData.image || "/placeholder-profile.svg"}
               alt={userData.name || "Profile Image"}
               width={80}
               height={80}

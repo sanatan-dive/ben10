@@ -13,7 +13,7 @@ export default function Home() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [authResolved, setAuthResolved] = useState(false); // Track if auth is resolved
   const router = useRouter();
-  const { user, isAuthenticated, isLoading } = useKindeAuth();
+  const { user, isLoading } = useKindeAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,8 +29,6 @@ export default function Home() {
           profile_image_url
         )}&followers=${followers_count}&posts=${tweet_count}`
       );
-
-      
     } catch (err: any) {
       setError(
         err.response?.data?.message || "Error fetching Twitter data. Please try again."
@@ -44,13 +42,13 @@ export default function Home() {
     // Wait for auth to resolve
     if (!isLoading) {
       setAuthResolved(true);
-      if (isAuthenticated && user?.given_name) {
+      if (user?.given_name) {
         setusername(user.given_name);
       }
     }
-  }, [isLoading, isAuthenticated, user]);
+  }, [isLoading, user]);
 
-  return isLoading || isSubmitting || !authResolved ? (
+  return isLoading || isSubmitting  ? (
     <div className="min-h-screen flex justify-center items-center bg-black text-white">
       <Loading />
     </div>
