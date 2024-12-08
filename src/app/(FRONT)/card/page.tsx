@@ -93,8 +93,22 @@ export default function AlienCard() {
       .catch((error) => {
         console.error("Error fetching user data:", error);
       });
-  
+      
+          //generating ai summary
+          axios
+          .post(`/api/tweets?username=${username}`)
+          .then((response) => {
+            setAiDescription(response.data); // Set the user data from the database
+          })
+          .catch((error) => {
+            console.error("Error fetching user data:", error);
+          });
+   
+     
+
     if (isAuthenticated && user?.given_name === username) {
+
+   
       // Save or update user data in the backend
       axios
         .put("/api/updateTwitterUser", newUserData)
@@ -260,14 +274,14 @@ export default function AlienCard() {
 
           {/* Description */}
           <div className="text-xs italic border border-black text-black p-2 rounded bg-[#e8f9e3]">
-            {aiDescription ? aiDescription : 'Loading AI summary...'}
+            {aiDescription ? aiDescription :"Loading AI description..." }
           </div>
         </div>
         
       </Card>
       {!isAuthenticated && (
         <div className="mt-4 flex flex-col font-bold gap-2 text-center">
-          Please log in to save your data and enhance your profile!
+          Please log in to save your data and enhance your profile picture! 😭
           <LoginLink>
               <button className="bg-gradient-to-r from-[#00a000] to-[#005900]   px-4 py-1.5 rounded-lg font-bold transition-all duration-300">
                 Log in

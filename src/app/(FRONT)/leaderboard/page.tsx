@@ -12,6 +12,8 @@ interface User {
   username: string;
   image: string;
   netVotes: number;
+  alienName: string;
+  alienTitle: string;
 }
 
 const Leaderboard = () => {
@@ -35,6 +37,21 @@ const Leaderboard = () => {
 
     fetchLeaderboard();
   }, []);
+
+  const alienTitleBackgroundClass = (alienTitle: string) => {
+    switch (alienTitle) {
+      case "Common":
+        return "bg-gradient-to-r from-blue-700 to-blue-400";
+      case "Rare":
+        return "bg-gradient-to-r from-red-800 via-red-500 to-red-800";
+      case "Epic":
+        return "bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500";
+      case "Legendary":
+        return "bg-gradient-to-r from-red-500 via-yellow-500 to-green-500 rainbow-bg";
+      default:
+        return "bg-gray-500";
+    }
+  };
 
   return (
     <div className="min-h-screen flex justify-center flex-col items-center  p-6">
@@ -75,12 +92,22 @@ const Leaderboard = () => {
                     />
                     <div>
                       <p className="font-bold text-white text-lg">{user.username}</p>
-                      <p className="text-green-400">Net Votes: {user.netVotes}</p>
+                      <div className="flex items-center space-x-2">
+                      <p className="text-md text-green-400">{user.alienName}</p>
+                      <p
+                            className={`text-sm font-bold flex justify-center items-center ${alienTitleBackgroundClass(
+                              user.alienTitle
+                            )} text-white px-2  rounded-md`}
+                          >
+                            {user.alienTitle}
+                          </p>
+                          </div>     
                     </div>
                   </div>
                   <Link href={`/vote?userId=${user.id}`} className="text-white">
                   <div className="bg-gradient-to-r from-[#00a000] to-[#005900] text-white px-4 py-2 rounded-full hover:bg-green-600 cursor-pointer">
-                    Vote
+                    
+                    Votes: {user.netVotes}
                   </div>
                   </Link>
                 </li>

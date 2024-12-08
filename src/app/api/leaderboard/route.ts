@@ -11,6 +11,8 @@ export async function GET(): Promise<Response> {
         id: true,
         username: true,
         image: true,
+        alienName: true,
+        alienTitle: true,
         votesReceived: {
           select: { value: true },
         },
@@ -23,6 +25,8 @@ export async function GET(): Promise<Response> {
         id: user.id,
         username: user.username,
         image: user.image,
+        alienName: user.alienName,
+        alienTitle: user.alienTitle,
         netVotes: user.votesReceived.reduce((sum, vote) => sum + vote.value, 0),
       }))
       .sort((a, b) => b.netVotes - a.netVotes); // Sort by net votes
