@@ -94,13 +94,12 @@ function AlienCardContent() {
         console.error("Error fetching user data:", error);
       });
       
-          //generating ai summary
+          
       
         
-   console.log(username)
-   console.log(user)
 
-    if (isAuthenticated && user?.given_name == username) {
+
+    if (isAuthenticated ) {
       
 
    
