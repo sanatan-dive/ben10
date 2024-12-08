@@ -29,7 +29,7 @@ const Profile = () => {
         setUserData(response.data); // Set the user data from the database
       })
       .catch((error) => {
-        console.error("Error fetching user data:", error);
+        console.log("Error fetching user data:", error);
       })
       .finally(() => setLoading(false));
   }, [isAuthenticated, user]);
