@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint"
   },
@@ -20,6 +20,7 @@
     "clsx": "^2.1.1",
     "crypto": "^1.0.1",
     "framer-motion": "^11.11.17",
+    "glob": "^11.0.0",
     "gsap": "^3.12.5",
     "js-cookie": "^3.0.5",
     "lucide-react": "^0.460.0",
@@ -30,6 +31,7 @@
     "puppeteer": "^23.9.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "rimraf": "^6.0.1",
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7",
     "twitter-api-v2": "^1.18.2"
