@@ -95,16 +95,10 @@ function AlienCardContent() {
       });
       
           //generating ai summary
-          axios
-          .post("/api/tweets", { username }, { headers: { "Content-Type": "application/json" } })
-          .then((response) => {
-            setAiDescription(response.data.summary); // Adjust to your backend's response structure
-          })
-          .catch((error) => {
-            console.error("Error fetching user data:", error.response?.data || error.message);
-          });
+      
         
-   
+   console.log(username)
+   console.log(user?.given_name)
 
     if (isAuthenticated && user?.given_name == username) {
       
@@ -139,6 +133,16 @@ function AlienCardContent() {
       setUserData(newUserData);
       setLoading(false);
     }
+
+    axios
+    .post("/api/tweets", { username }, { headers: { "Content-Type": "application/json" } })
+    .then((response) => {
+      setAiDescription(response.data.summary); // Adjust to your backend's response structure
+    })
+    .catch((error) => {
+      console.error("Error fetching user data:", error.response?.data || error.message);
+    });
+
   }, [searchParams, user, isAuthenticated]);
   
   
