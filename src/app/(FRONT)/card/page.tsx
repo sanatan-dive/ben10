@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import axios from "axios";
 import Image from "next/image";
@@ -18,7 +18,7 @@ interface AlienData {
   description: string;
 }
 
-export default function AlienCard() {
+function AlienCardContent() {
   const searchParams = useSearchParams();
   const [userData, setUserData] = useState<any>(null);
   const [aiDescription, setAiDescription] = useState<string | null>(null);
@@ -291,5 +291,13 @@ export default function AlienCard() {
       )}
     </div>
     
+  );
+}
+
+export default function AlienCard() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <AlienCardContent />
+    </Suspense>
   );
 }
