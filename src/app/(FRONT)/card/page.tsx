@@ -98,7 +98,7 @@ function AlienCardContent() {
       
         
    console.log(username)
-   console.log(user?.given_name)
+   console.log(user)
 
     if (isAuthenticated && user?.given_name == username) {
       
