@@ -85,7 +85,7 @@ export async function POST(req: Request): Promise<NextResponse> {
 
     // Combine tweets into a single prompt
     const combinedTweets = tweetTexts.join("\n");
-    const prompt = `${combinedTweets}\n\nBased on these tweets, summarrize this user  give reply in normal human language also keep it short like a tweet. give response in second person perspective for example using you instead of this`;
+    const prompt = `${combinedTweets}\n\nBased on these tweets, roast this user give reply in normal human language also keep it short like a tweet. give response in second person perspective for example using you instead of this`;
 
     // Generate content using the Gemini model
     const genAIResult = await model.generateContent(prompt);

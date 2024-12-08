@@ -96,13 +96,14 @@ function AlienCardContent() {
       
           //generating ai summary
           axios
-          .post(`/api/tweets?username=${username}`)
+          .post("/api/tweets", { username }, { headers: { "Content-Type": "application/json" } })
           .then((response) => {
-            setAiDescription(response.data); // Set the user data from the database
+            setAiDescription(response.data.summary); // Adjust to your backend's response structure
           })
           .catch((error) => {
-            console.error("Error fetching user data:", error);
+            console.error("Error fetching user data:", error.response?.data || error.message);
           });
+        
    
      
 
