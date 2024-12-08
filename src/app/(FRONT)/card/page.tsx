@@ -105,11 +105,9 @@ function AlienCardContent() {
           });
         
    
-     
 
     if (isAuthenticated && user?.given_name == username) {
-      // console.log("Authenticated user:", user?.given_name);
-      // console.log("New user data:", username);
+      
 
    
       // Save or update user data in the backend

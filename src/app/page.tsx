@@ -8,10 +8,10 @@ import { motion } from "framer-motion";
 import Loading from "@/components/Loading";
 
 export default function Home() {
-  const [username, setusername] = useState("");
-  const [error, setError] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [authResolved, setAuthResolved] = useState(false); // Track if auth is resolved
+  const [userName, setUserName] = useState<string>(""); 
+  const [error, setError] = useState<string>(""); // Explicitly define error type as string
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false); // Explicitly define type as boolean
+  const [authResolved, setAuthResolved] = useState<boolean>(false); // Explicitly define type as boolean
   const router = useRouter();
   const { user, isLoading } = useKindeAuth();
 
@@ -21,11 +21,11 @@ export default function Home() {
     setError("");
 
     try {
-      const response = await axios.get(`/api/twitter?username=${username}`);
-      const { name, profile_image_url, followers_count, tweet_count } = response.data;
+      const response = await axios.get(`/api/twitter?username=${userName}`); // Use userName here
+      const { username, profile_image_url, followers_count, tweet_count } = response.data;
 
       router.push(
-        `/card?name=${encodeURIComponent(name)}&image=${encodeURIComponent(
+        `/card?name=${encodeURIComponent(username)}&image=${encodeURIComponent(
           profile_image_url
         )}&followers=${followers_count}&posts=${tweet_count}`
       );
@@ -43,12 +43,12 @@ export default function Home() {
     if (!isLoading) {
       setAuthResolved(true);
       if (user?.given_name) {
-        setusername(user.given_name);
+        setUserName(user.given_name); // Set userName here
       }
     }
   }, [isLoading, user]);
 
-  return isLoading || isSubmitting  ? (
+  return isLoading || isSubmitting ? (
     <div className="min-h-screen flex justify-center items-center bg-black text-white">
       <Loading />
     </div>
@@ -75,12 +75,12 @@ export default function Home() {
             whileFocus={{ scale: 1.05 }}
             type="text"
             placeholder="Twitter username"
-            value={username.trim()}
+            value={userName.trim()} // Use userName here
             onChange={(e) => {
               const input = e.target.value;
               // Allow only valid Twitter username characters
               if (/^[a-zA-Z0-9_]*$/.test(input) || input === "") {
-                setusername(input);
+                setUserName(input); // Set userName here
               }
             }}
             className="p-2 mb-4 w-64 border border-gray-400 rounded-md text-white bg-stone-800 focus:outline-none focus:ring-2 focus:ring-[#00ff00] focus:ring-offset-2"
