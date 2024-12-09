@@ -54,8 +54,8 @@ const Profile = () => {
   };
 
   const calculatePostFrequency = (posts: number, days: number) => {
-    if (days === 0) return "0 Posts/Day";
-    return (posts / days).toFixed(2);
+    if (days === 0) return "0 Posts/Day"; // Prevent division by zero
+    return ((posts / days)/10).toFixed(2);
   };
 
   const getFlameCount = (alienTitle: string) => {
