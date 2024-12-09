@@ -189,6 +189,7 @@ const Profile = () => {
       ) : (
         <div className="text-center text-xl font-semibold text-red-500">
           No data found in database
+          Visit Home Page
         </div>
       )}
     </div>
