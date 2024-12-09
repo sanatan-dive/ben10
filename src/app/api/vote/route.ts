@@ -11,9 +11,9 @@ export async function POST(request: Request): Promise<Response> {
       return new Response("Invalid input: voterId, votedUserId, or value is incorrect", { status: 400 });
     }
 
-    if (voterId === votedUserId) {
-      return new Response("You cannot vote for yourself.", { status: 403 });
-    }
+    // if (voterId === votedUserId) {
+    //   return new Response("You cannot vote for yourself.", { status: 403 });
+    // }
 
     // Check if the voter and voted user exist
     const [voter, votedUser] = await Promise.all([
@@ -21,9 +21,9 @@ export async function POST(request: Request): Promise<Response> {
       prisma.user.findUnique({ where: { id: votedUserId } }),
     ]);
 
-    // if (!voter || !votedUser) {
-    //   return new Response("Voter or voted user does not exist.", { status: 404 });
-    // }
+    if (!voter || !votedUser) {
+      return new Response("Voter or voted user does not exist.", { status: 404 });
+    }
 
     // Check if a vote already exists
     const existingVote = await prisma.vote.findUnique({
