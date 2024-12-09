@@ -8,10 +8,12 @@ export async function POST(request: Request): Promise<Response> {
 
     // Validate input
     if (!voterId || !votedUserId || ![1, -1].includes(value)) {
-      return new Response("Invalid input", { status: 400 });
+      return new Response("Invalid input: voterId, votedUserId, or value is incorrect", { status: 400 });
     }
 
-  
+    if (voterId === votedUserId) {
+      return new Response("You cannot vote for yourself.", { status: 403 });
+    }
 
     // Check if the voter and voted user exist
     const [voter, votedUser] = await Promise.all([
@@ -20,30 +22,80 @@ export async function POST(request: Request): Promise<Response> {
     ]);
 
     if (!voter || !votedUser) {
-      return new Response("Voter or voted user does not exist", { status: 404 });
+      return new Response("Voter or voted user does not exist.", { status: 404 });
     }
 
-    // Upsert the vote: update if it exists, otherwise create it
-    const vote = await prisma.vote.upsert({
+    // Check if a vote already exists
+    const existingVote = await prisma.vote.findUnique({
       where: {
-        voterId_votedUserId: { voterId, votedUserId },
-      },
-      update: {
-        value, // Update the vote value if the record already exists
-      },
-      create: {
-        voterId,
-        votedUserId,
-        value, // Create a new vote if no existing record
+        voterId_votedUserId: {
+          voterId,
+          votedUserId,
+        },
       },
     });
 
-    return new Response(JSON.stringify({ message: "Vote recorded", vote }), {
+    if (existingVote) {
+      // If a vote already exists, update it and adjust the follower count
+      if (existingVote.value === value) {
+        return new Response("You have already voted for this user.", { status: 400 });
+      }
+    
+      // Adjust the follower count based on the vote change
+      const difference = value + existingVote.value;
+//       console.log("Existing vote:", existingVote.value);
+// console.log("New vote:", value);
+// console.log("Difference:", difference);
+
+    
+      await prisma.$transaction([
+        prisma.vote.update({
+          where: {
+            voterId_votedUserId: {
+              voterId,
+              votedUserId,
+            },
+          },
+          data: { value },
+        }),
+        prisma.user.update({
+          where: { id: votedUserId },
+          data: {
+            followers: {
+              increment: value , // Correctly adjust followers
+            },
+          },
+        }),
+      ]);
+    } else {
+      // Create a new vote and update the follower count
+      await prisma.$transaction([
+        prisma.vote.create({
+          data: {
+            voterId,
+            votedUserId,
+            value,
+          },
+        }),
+        prisma.user.update({
+          where: { id: votedUserId },
+          data: {
+            followers: {
+              increment: value, // Add the new vote
+            },
+          },
+        }),
+      ]);
+    }
+    
+
+
+    return new Response(JSON.stringify({ message: "Vote recorded successfully." }), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error("Error in vote creation:", error);
+    console.error("Error processing vote:", error);
     return new Response("Internal server error", { status: 500 });
   }
 }

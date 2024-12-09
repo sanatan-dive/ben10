@@ -1,5 +1,3 @@
-// /api/getUser.ts
-
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
@@ -7,20 +5,24 @@ const prisma = new PrismaClient();
 export async function GET(request: Request): Promise<Response> {
   try {
     const url = new URL(request.url);
-    const username = url.searchParams.get("username"); // Assume username is passed as a query param
+    const username = url.searchParams.get("username");
 
     if (!username) {
-      return new Response("Missing username", { status: 400 });
+      return new Response(JSON.stringify({ error: "Missing username" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
     const user = await prisma.user.findUnique({
-      where: {
-        username,
-      },
+      where: { username },
     });
 
     if (!user) {
-      return new Response("User not found", { status: 404 });
+      return new Response(JSON.stringify({ error: "User not found" }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
     return new Response(JSON.stringify(user), {
@@ -29,6 +31,9 @@ export async function GET(request: Request): Promise<Response> {
     });
   } catch (error) {
     console.error("Error fetching user:", error);
-    return new Response("Internal server error", { status: 500 });
+    return new Response(JSON.stringify({ error: "Internal server error" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 }

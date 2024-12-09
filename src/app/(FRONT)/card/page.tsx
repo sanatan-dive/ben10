@@ -94,12 +94,12 @@ function AlienCardContent() {
         console.error("Error fetching user data:", error);
       });
       
-          
+        const name = user?.given_name + " " + user?.family_name;
       
         
 
 
-    if (isAuthenticated ) {
+    if (isAuthenticated && username === name) {
       
 
    
@@ -164,7 +164,7 @@ function AlienCardContent() {
 
   const calculatePostFrequency = (posts: number, days: number) => {
     if (days === 0) return "0 Posts/Day"; // Prevent division by zero
-    return (posts / days).toFixed(2);
+    return ((posts / days)/10).toFixed(2);
   };
 
   const getFlameCount = (alienTitle: string) => {
@@ -238,10 +238,10 @@ function AlienCardContent() {
                   ))}
               </div>
               <div>
-                <h3 className="font-bold text-black">{userData.alienName}</h3>
-                <p className="text-sm text-black">{userData.alienDescription}</p>
+                <h3 className="font-bold text-[#e8f9e3]">{userData.alienName}</h3>
+                <p className="text-sm text-[#e8f9e3dc]">{userData.alienDescription}</p>
               </div>
-              <span className="font-bold text-black ml-auto">
+              <span className="font-bold text-[#e8f9e3] ml-auto">
                 {userData.followers} Power
               </span>
             </div>
@@ -251,24 +251,24 @@ function AlienCardContent() {
           <div className="border-t border-gray-400 pt-2">
             <div className="flex justify-between text-xs">
               <div>
-                <span className="font-bold text-black">Posts</span>
+                <span className="font-bold text-[#e8f9e3]">Posts</span>
                 <div className="flex items-center gap-1 mt-1">
                   <div className="w-4 h-4 bg-gradient-to-br from-blue-600 to-blue-400 rounded-full" />
-                  <span className="text-black">{userData.posts}</span>
+                  <span className="text-[#f1faee]">{userData.posts}</span>
                 </div>
               </div>
               <div>
-                <span className="font-bold text-black">Followers</span>
+                <span className="font-bold text-[#e8f9e3]">Followers</span>
                 <div className="flex items-center gap-1 mt-1">
                   <div className="w-4 h-4 bg-gradient-to-br from-yellow-600 to-yellow-400 rounded-full" />
-                  <span className="text-black">{userData.followers}</span>
+                  <span className="text-[#f1faee]">{userData.followers}</span>
                 </div>
               </div>
               <div>
-                <span className="font-bold text-black">Post Frequency</span>
+                <span className="font-bold text-[#e8f9e3]">Post Frequency</span>
                 <div className="flex gap-1 mt-1">
                   <div className="w-4 h-4 bg-gradient-to-br from-gray-600 to-gray-400 rounded-full" />
-                  <span className="text-black">
+                  <span className="text-[#f1faee]">
                     {calculatePostFrequency(userData.posts, 30)} Posts/Day
                   </span>
                 </div>
@@ -277,7 +277,7 @@ function AlienCardContent() {
           </div>
 
           {/* Description */}
-          <div className="text-xs italic border border-black text-black p-2 rounded bg-[#e8f9e3]">
+          <div className="text-sm italic border border-black text-black p-2 rounded bg-[#e8f9e3]">
             {aiDescription ? aiDescription :"Loading AI description..." }
           </div>
         </div>

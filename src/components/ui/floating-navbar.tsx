@@ -30,19 +30,28 @@ export const FloatingNav: React.FC<FloatingNavProps> = ({
         className
       )}
     >
-      {navItems.map((navItem, idx) => (
-        <Link
-          key={`link-${idx}`}
-          href={navItem.link}
-          className={cn(
-            "relative dark:text-neutral-50 items-center flex space-x-1 text-neutral-600 dark:hover:text-neutral-300 hover:text-neutral-500"
-          )}
-        >
-          <span className="block sm:hidden">{navItem.icon}</span>
-          <span className="hidden sm:block text-sm">{navItem.name}</span>
-        </Link>
-      ))}
+      {/* Navigation Items */}
+      <div
+        className={cn(
+          "flex sm:flex-row  sm:space-x-4 items-center justify-center scale-[90%] gap-2 sm:scale-100 sm:space-y-0 sm:flex",
+          "sm:text-sm sm:scale-100 "
+        )}
+      >
+        {navItems.map((navItem, idx) => (
+          <Link
+            key={`link-${idx}`}
+            href={navItem.link}
+            className={cn(
+              "relative dark:text-neutral-50 items-center flex space-x-1 text-neutral-600 dark:hover:text-neutral-300 hover:text-neutral-500"
+            )}
+          >
+            <span className="block sm:hidden ">{navItem.icon}</span>
+            <span className=" sm:scale-100 ">{navItem.name}</span>
+          </Link>
+        ))}
+      </div>
 
+      {/* Sign In / Sign Out Button */}
       <button
         className="border text-sm font-medium relative hover:bg-[#178617] border-neutral-200 dark:border-white/[0.2] text-black dark:text-white px-4 py-2 rounded-full"
       >
@@ -55,6 +64,7 @@ export const FloatingNav: React.FC<FloatingNavProps> = ({
         )}
       </button>
 
+      {/* Mode Toggle */}
       <ModeToggle />
     </div>
   );

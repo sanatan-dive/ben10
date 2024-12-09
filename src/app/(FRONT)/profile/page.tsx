@@ -20,7 +20,8 @@ const Profile = () => {
       return;
     }
 
-    const username = user?.given_name || "defaultUsername";
+
+    const username = user?.given_name + " " + user?.family_name;
 
     // Fetch user data
     axios

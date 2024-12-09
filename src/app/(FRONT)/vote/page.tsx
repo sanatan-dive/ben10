@@ -62,15 +62,15 @@ const Vote = () => {
       setMessage("You must be logged in to vote.");
       return;
     }
-
+    const name = user?.given_name + " " + user?.family_name;
     // Prevent voting for self if KindeAuth name matches database name
     const votedUser = users.find((user) => user.id === votedUserId);
-    if (votedUser && user?.given_name === votedUser.username) {
+    if (votedUser?.username === name) {
       setMessage("You cannot vote for yourself.");
       return;
     }
-
-    console.log("Sending vote:", { voterId, votedUserId, value });
+  
+    
     try {
       setMessage(""); // Clear any previous messages
       const response = await axios.post("/api/vote", {

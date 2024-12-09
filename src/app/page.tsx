@@ -9,12 +9,13 @@ import Loading from "@/components/Loading";
 
 export default function Home() {
   const [userName, setUserName] = useState<string>(""); 
-  const [error, setError] = useState<string>(""); // Explicitly define error type as string
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false); // Explicitly define type as boolean
-  const [authResolved, setAuthResolved] = useState<boolean>(false); // Explicitly define type as boolean
+  const [error, setError] = useState<string>(""); 
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false); 
+  const [authResolved, setAuthResolved] = useState<boolean>(false); 
   const router = useRouter();
   const { user, isLoading } = useKindeAuth();
 
+  // Form submission handler
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -22,37 +23,42 @@ export default function Home() {
 
     try {
       const response = await axios.get(`/api/twitter?username=${userName}`); // Use userName here
-      const { username, profile_image_url, followers_count, tweet_count } = response.data;
+      const { name, profile_image_url, followers_count, tweet_count } = response.data;
 
       router.push(
-        `/card?name=${encodeURIComponent(username)}&image=${encodeURIComponent(
+        `/card?name=${encodeURIComponent(name)}&image=${encodeURIComponent(
           profile_image_url
         )}&followers=${followers_count}&posts=${tweet_count}`
       );
     } catch (err: any) {
-      setError(
-        err.response?.data?.message || "Error fetching Twitter data. Please try again."
-      );
+      const errorMessage = err?.response?.data?.message || "Error fetching Twitter data. Please try again.";
+      setError(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  // Handling authentication state and setting userName on load
   useEffect(() => {
-    // Wait for auth to resolve
     if (!isLoading) {
       setAuthResolved(true);
       if (user?.given_name) {
-        setUserName(user.given_name); // Set userName here
+        setUserName(user.given_name); 
       }
     }
   }, [isLoading, user]);
 
-  return isLoading || isSubmitting ? (
-    <div className="min-h-screen flex justify-center items-center bg-black text-white">
-      <Loading />
-    </div>
-  ) : (
+  // Show loading screen while authenticating or submitting
+  if (isLoading || isSubmitting) {
+    return (
+      <div className="min-h-screen flex justify-center items-center bg-black text-white">
+        <Loading />
+      </div>
+    );
+  }
+
+  // Main form UI
+  return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}

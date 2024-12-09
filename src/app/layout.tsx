@@ -38,11 +38,11 @@ export default function RootLayout({
   return (
     
     <AuthProvider>
-    <html lang="en" className="h-full">
+    <html lang="en" className="min-h-screen">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased h-full`}
       >
-        <div className="absolute inset-0 -z-10 h-full w-full items-center px-5 py-24 [background:radial-gradient(125%_125%_at_50%_10%,#0000_40%,#0f0_100%)] dark:[background:radial-gradient(125%_125%_at_50%_10%,#000_60%,#0f0_100%)]"></div>
+        <div className="absolute inset-0 -z-10 min-h-screen w-full items-center px-5 py-24 [background:radial-gradient(125%_125%_at_50%_10%,#0000_40%,#0f0_100%)] dark:[background:radial-gradient(125%_125%_at_50%_10%,#000_60%,#0f0_100%)]"></div>
         {/* Theme provider to manage light/dark themes */}
         <ThemeProvider
           attribute="class"
