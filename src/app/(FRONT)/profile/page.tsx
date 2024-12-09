@@ -22,10 +22,11 @@ const Profile = () => {
 
 
     const username = user?.given_name + " " + user?.family_name;
+    const userName = username.trim()
 
     // Fetch user data
     axios
-      .get(`/api/getUser?username=${username}`)
+      .get(`/api/getUser?username=${userName}`)
       .then((response) => {
         setUserData(response.data); // Set the user data from the database
       })
