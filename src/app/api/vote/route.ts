@@ -21,9 +21,9 @@ export async function POST(request: Request): Promise<Response> {
       prisma.user.findUnique({ where: { id: votedUserId } }),
     ]);
 
-    if (!voter || !votedUser) {
-      return new Response("Voter or voted user does not exist.", { status: 404 });
-    }
+    // if (!voter || !votedUser) {
+    //   return new Response("Voter or voted user does not exist.", { status: 404 });
+    // }
 
     // Check if a vote already exists
     const existingVote = await prisma.vote.findUnique({

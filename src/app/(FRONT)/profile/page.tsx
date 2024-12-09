@@ -21,8 +21,9 @@ const Profile = () => {
     }
 
 
-    const username = user?.given_name + " " + user?.family_name;
-    const userName = username.trim()
+    const username = user?.given_name + (user?.family_name ? " " + user?.family_name : "");
+    const userName = username.trim();
+    console.log(userName);
 
     // Fetch user data
     axios
