@@ -78,13 +78,14 @@ const Profile = () => {
   <div className="flex items-center justify-center min-h-screen">
       <Loading />;
   </div> 
-
+const username = user?.given_name + (user?.family_name ? " " + user?.family_name : "");
+const userName = username.trim();
   
 
   // Render profile
   return (
     <div className="p-8  flex flex-col  items-center min-h-screen justify-center">
-        {!isAuthenticated ?(
+        {!isAuthenticated && !userName ?(
              <div className="flex justify-center gap-4 flex-col items-center ">
              <h2 className="text-md ">Please log in to access your profile!</h2>
              <LoginLink>
