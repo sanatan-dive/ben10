@@ -64,7 +64,7 @@ const Vote = () => {
     }
     const name = user?.given_name + (user?.family_name ? " " + user?.family_name : "");
     const userName = name.trim()
-    console.log(userName)
+    
     // Prevent voting for self if KindeAuth name matches database name
     const votedUser = users.find((user) => user.id === votedUserId);
     if (votedUser?.username === userName) {
