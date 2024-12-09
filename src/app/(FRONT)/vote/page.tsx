@@ -63,9 +63,10 @@ const Vote = () => {
       return;
     }
     const name = user?.given_name + " " + user?.family_name;
+    const userName = name.trim()
     // Prevent voting for self if KindeAuth name matches database name
     const votedUser = users.find((user) => user.id === votedUserId);
-    if (votedUser?.username === name) {
+    if (votedUser?.username === userName) {
       setMessage("You cannot vote for yourself.");
       return;
     }
