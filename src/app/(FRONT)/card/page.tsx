@@ -99,7 +99,7 @@ function AlienCardContent() {
         
 
 
-    if (isAuthenticated && username === name) {
+    if (isAuthenticated && username === name ||  username === user?.given_name ) {
       
 
    
