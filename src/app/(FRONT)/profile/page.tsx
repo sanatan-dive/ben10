@@ -8,6 +8,7 @@ import { Card } from "../../../components/ui/card";
 import { RainbowButton } from "@/components/ui/rainbow-button";
 import Loading from "@/components/Loading";
 import { LoginLink, useKindeAuth } from "@kinde-oss/kinde-auth-nextjs";
+import Link from "next/link";
 
 const Profile = () => {
   const [userData, setUserData] = useState<any>(null);
@@ -189,7 +190,9 @@ const Profile = () => {
       ) : (
         <div className="text-center text-xl font-semibold text-red-500">
           No data found in database
+          <Link className="text-blue-500 hover:underline" href="/">
           Visit Home Page
+          </Link>
         </div>
       )}
     </div>
