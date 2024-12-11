@@ -61,7 +61,7 @@ const Leaderboard = () => {
   const alienTitleBackgroundClass = (alienTitle: string) => {
     switch (alienTitle) {
       case "Common":
-        return "bg-gradient-to-r from-blue-700 to-blue-400";
+        return "bg-gradient-to-r from-blue-700 via-blue-400 to-blue-700";
       case "Rare":
         return "bg-gradient-to-r from-red-800 via-red-500 to-red-800";
       case "Epic":

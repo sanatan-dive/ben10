@@ -1,14 +1,15 @@
 "use client";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import axios from "axios";
 import Image from "next/image";
-import { Flame } from "lucide-react";
+import { Flame} from "lucide-react";
 import { Card } from "../../../components/ui/card";
 import { RainbowButton } from "@/components/ui/rainbow-button";
 import aliensData from "./alien.json"; // Import the aliens JSON file
 import Loading from "@/components/Loading";
-
+import { toPng } from "html-to-image"; // Import html-to-image
+import { FaDownload, FaSquareXTwitter } from "react-icons/fa6";
 interface AlienData {
   name: string;
   title: string;
@@ -22,6 +23,7 @@ function AlienCardContent() {
   const [userData, setUserData] = useState<any>(null);
   const [aiDescription, setAiDescription] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const cardRef = useRef<HTMLDivElement>(null); // Ref for the card to capture it
 
   // Utility function to assign alien totally randomly
   const assignAlien = (): AlienData => {
@@ -72,31 +74,30 @@ function AlienCardContent() {
         setLoading(false);
       });
 
-      axios
-    .post("/api/tweets", { username }, { headers: { "Content-Type": "application/json" } })
-    .then((response) => {
-      setAiDescription(response.data.summary); // Adjust to your backend's response structure
-    })
-    .catch((error) => {
-      console.error("Error fetching user data:", error.response?.data || error.message);
-    });
+    axios
+      .post("/api/tweets", { username }, { headers: { "Content-Type": "application/json" } })
+      .then((response) => {
+        setAiDescription(response.data.summary); // Adjust to your backend's response structure
+      })
+      .catch((error) => {
+        console.error("Error fetching user data:", error.response?.data || error.message);
+      });
 
     axios
-    .post("/api/saveTwitterUser", newUserData, { headers: { "Content-Type": "application/json" } })
-    .then((response) => {
-      console.log("User data saved successfully:", response.data);
-    })
-    .catch((error) => {
-      console.error("Error saving user data:", error);
-    });
-
+      .post("/api/saveTwitterUser", newUserData, { headers: { "Content-Type": "application/json" } })
+      .then((response) => {
+        console.log("User data saved successfully:", response.data);
+      })
+      .catch((error) => {
+        console.error("Error saving user data:", error);
+      });
   }, [searchParams]);
 
   // Dynamically set the background color for the "Alien Title" section
   const alienTitleBackgroundClass = () => {
     switch (userData?.alienTitle) {
       case "Common":
-        return "bg-gradient-to-r from-blue-700 to-blue-400";
+        return "bg-gradient-to-r from-blue-700 via-blue-400 to-blue-700";
       case "Rare":
         return "bg-gradient-to-r from-red-800 via-red-500 to-red-800";
       case "Epic":
@@ -136,11 +137,25 @@ function AlienCardContent() {
     window.open(twitterUrl, "_blank");
   };
 
+  const downloadCard = async () => {
+    if (cardRef.current) {
+      try {
+        const dataUrl = await toPng(cardRef.current);
+        const link = document.createElement("a");
+        link.href = dataUrl;
+        link.download = "alien-card.png";
+        link.click();
+      } catch (error) {
+        console.error("Failed to generate image:", error);
+      }
+    }
+  };
+
   if (loading || !userData) return <div className="flex items-center min-h-screen justify-center"><Loading /></div>; // Show loading until data is available
 
   return (
-    <div className="p-8 mt-28 flex flex-col items-center justify-center">
-      <Card className="w-[400px] p-2 bg-gradient-to-b from-stone-950 to-black rounded-lg shadow-xl">
+    <div className="p-8 mt-2 flex flex-col items-center justify-center">
+      <Card ref={cardRef} className="w-full sm:w-[400px] p-2 bg-gradient-to-b from-stone-950 to-black rounded-lg shadow-xl">
         <div className="bg-gradient-to-b from-[#26811ecf] to-[#4ff04632] rounded-lg p-3 space-y-2">
           {/* Header */}
           <div className="flex items-center justify-center">
@@ -161,13 +176,13 @@ function AlienCardContent() {
 
           {/* Alien and Profile Images */}
           <div className="flex justify-center items-center">
-            <div className="relative flex justify-center items-center h-52 w-52 bg-stone-950 rounded-lg">
+            <div className="relative flex justify-center items-center h-40 sm:h-52 w-40 sm:w-52 bg-stone-950 rounded-lg">
               <Image
                 src={userData.image || "/placeholder-profile.svg"}
                 alt={userData.name || "Profile Image"}
                 width={80}
                 height={80}
-                className="w-48 h-48 border-4 border-stone-900  object-contain rounded-l-lg"
+                className="w-36 h-36 sm:w-48 sm:h-48 border-4 border-stone-900  object-contain rounded-l-lg"
               />
             </div>
           </div>
@@ -236,20 +251,30 @@ function AlienCardContent() {
           </div>
         </div>
 
-        {/* Share Button */}
-        <div className="flex justify-center mt-4">
-          <button
-            className="bg-blue-500 text-white py-2 px-4 rounded-full"
-            onClick={shareOnTwitter}
-          >
-            Share on Twitter
-          </button>
-        </div>
-        
+        {/* Buttons */}
       </Card>
-  
+      <div className="flex flex-col sm:flex-row gap-4 mt-4 w-full sm:w-[400px] justify-center">
+  {/* Share on Twitter Button */}
+  <button
+    className="bg-gradient-to-r from-stone-950 via-stone-700 to-stone-950 text-white py-2 px-4 rounded-full w-full sm:w-auto flex items-center justify-center gap-2 transition-transform duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg"
+    onClick={shareOnTwitter}
+  >
+    <FaSquareXTwitter className="w-4 h-4" />
+    Share on Twitter
+  </button>
+
+  {/* Download Card Button */}
+  <button
+    className="bg-gradient-to-r from-blue-800 via-blue-400 to-blue-800 text-white py-2 px-4 rounded-full w-full sm:w-auto flex items-center justify-center gap-2 transition-transform duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg"
+    onClick={downloadCard}
+  >
+    <FaDownload className="w-4 h-4" />
+    Download Card
+  </button>
+</div>
+
+
     </div>
-    
   );
 }
 

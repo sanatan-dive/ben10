@@ -53,7 +53,7 @@ const Vote = () => {
   const alienTitleBackgroundClass = (alienTitle: string) => {
     switch (alienTitle) {
       case "Common":
-        return "bg-gradient-to-r from-blue-700 to-blue-400";
+        return "bg-gradient-to-r from-blue-700 via-blue-400 to-blue-700";
       case "Rare":
         return "bg-gradient-to-r from-red-800 via-red-500 to-red-800";
       case "Epic":
@@ -98,7 +98,7 @@ const Vote = () => {
                     <Image
                       width={64}
                       height={64}
-                      src={user.image || "/default-avatar.png"} // fallback if no pfpUrl
+                      src={user.image || "/default-avatar.png"} 
                       alt={`${user.username}'s profile`}
                       className="w-14 h-14 rounded-full border-2"
                     />
@@ -107,7 +107,7 @@ const Vote = () => {
                       <div className="flex gap-2">
                         <p className="text-md text-green-400">{user.alienName}</p>
                         <p
-                          className={`text-sm font-bold flex justify-center items-center ${alienTitleBackgroundClass(
+                          className={`text-sm font-bold flex justify-center  items-center ${alienTitleBackgroundClass(
                             user.alienTitle
                           )} text-white px-2  rounded-md`}
                         >
@@ -118,10 +118,11 @@ const Vote = () => {
                   </div>
                   {/* Visit Button */}
                   <Link href={`/profile/${user.username}`}>
-                    <button className="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 mt-2">
-                      Visit Profile
-                    </button>
-                  </Link>
+  <button className="bg-blue-500 text-white px-4 py-3 scale-[80%] sm:scale-100 rounded-full hover:bg-blue-600 mt-2 sm:px-8 sm:py-4 sm:mt-0">
+    Visit Profile
+  </button>
+</Link>
+
                 </div>
               ))
             )}
