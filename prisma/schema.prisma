@@ -8,14 +8,11 @@ datasource db {
 }
 
 model User {
-  id Int @id @default(autoincrement())
-
-  username      String   @unique // Optional username of the user from X (Twitter)
-  pfpUrl        String? // Optional profile picture URL of the user
-  votesGiven    Vote[]   @relation("VoterRelation") // Votes cast by this user
-  votesReceived Vote[]   @relation("VotedUserRelation") // Votes received by this user
-  createdAt     DateTime @default(now()) // Timestamp when the user was created
-  updatedAt     DateTime @updatedAt // Timestamp when the user was last updated
+  id               Int      @id @default(autoincrement())
+  username         String   @unique // Optional username of the user from X (Twitter)
+  pfpUrl           String?  // 
+  createdAt        DateTime @default(now()) // Timestamp when the user was created
+  updatedAt        DateTime @updatedAt // Timestamp when the user was last updated
 
   // Alien information fields now included directly in User model
   alienName        String
@@ -26,19 +23,4 @@ model User {
   followers        Int
   posts            Int
   image            String
-
-  // Optionally, if you need a relation to UserAlienInfo for historical reasons, you can add it here:
-  // userAlienInfo   UserAlienInfo?
-}
-
-model Vote {
-  id          Int      @id @default(autoincrement())
-  voterId     Int // Foreign key to the user casting the vote
-  voter       User     @relation("VoterRelation", fields: [voterId], references: [id])
-  votedUserId Int // Foreign key to the user receiving the vote
-  votedUser   User     @relation("VotedUserRelation", fields: [votedUserId], references: [id])
-  value       Int // Value of the vote: +1 for upvote, -1 for downvote
-  createdAt   DateTime @default(now()) // Timestamp when the vote was created
-
-  @@unique([voterId, votedUserId]) // Prevent duplicate votes from the same user
 }

@@ -1,49 +1,57 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
 import axios from "axios";
-import Image from "next/image";
-import { Flame } from "lucide-react";
-import { Card } from "../../../components/ui/card";
-import { RainbowButton } from "@/components/ui/rainbow-button";
 import Loading from "@/components/Loading";
-import { LoginLink, useKindeAuth } from "@kinde-oss/kinde-auth-nextjs";
-import Link from "next/link";
+import Link from "next/link"; // Import Link for navigation
+import Image from "next/image";
 
-const Profile = () => {
-  const [userData, setUserData] = useState<any>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const { user, isAuthenticated } = useKindeAuth();
+// Define the User interface
+interface User {
+  id: number;
+  username: string;
+  image: string;
+  alienName: string;
+  alienTitle: string;
+  followers: number;
+  posts: number;
+}
 
+const Vote = () => {
+  const [users, setUsers] = useState<User[]>([]);
+  const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
+  const [message, setMessage] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [loadingUsers, setLoadingUsers] = useState<boolean>(false);
+
+  // Fetch users
   useEffect(() => {
-    if (!isAuthenticated) {
-      setLoading(false); // Stop loading if the user is not authenticated
-      return;
-    }
+    const fetchUsers = async () => {
+      setLoadingUsers(true); // Start loading
+      try {
+        const response = await axios.get("/api/getAllUser");
+        setUsers(response.data);
+        setFilteredUsers(response.data);
+      } catch (error) {
+        setMessage("Unable to fetch users.");
+      } finally {
+        setLoadingUsers(false); // End loading
+      }
+    };
+    fetchUsers();
+  }, []);
 
-    const username = user?.given_name + (user?.family_name ? " " + user?.family_name : "");
-    const userName = username.trim();
+  // Filter users by search query
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    const filtered = users.filter((user) =>
+      user.username.toLowerCase().includes(query.toLowerCase())
+    );
+    setFilteredUsers(filtered);
+  };
 
-    // Fetch user data
-    axios
-      .get(`/api/getUser?username=${userName}`)
-      .then((response) => {
-        if (response.data) {
-          setUserData(response.data); // Set the user data from the database
-        } else {
-          setUserData(null); // No data found in database
-        }
-      })
-      .catch((error) => {
-        console.log("Error fetching user data:", error);
-        setUserData(null); // Handle error by setting data as null
-      })
-      .finally(() => setLoading(false));
-  }, [isAuthenticated, user]);
-
-  // Alien title background
-  const alienTitleBackgroundClass = () => {
-    switch (userData?.alienTitle) {
+  // Function to determine the background class based on alien title
+  const alienTitleBackgroundClass = (alienTitle: string) => {
+    switch (alienTitle) {
       case "Common":
         return "bg-gradient-to-r from-blue-700 to-blue-400";
       case "Rare":
@@ -57,146 +65,76 @@ const Profile = () => {
     }
   };
 
-  const calculatePostFrequency = (posts: number, days: number) => {
-    if (days === 0) return "0 Posts/Day"; // Prevent division by zero
-    return ((posts / days)/10).toFixed(2);
-  };
-
-  const getFlameCount = (alienTitle: string) => {
-    switch (alienTitle) {
-      case "Common":
-        return 1;
-      case "Rare":
-        return 2;
-      case "Epic":
-        return 3;
-      case "Legendary":
-        return 4;
-      default:
-        return 0;
-    }
-  };
-
-  // Handle loading state
-  if (loading) return (
-    <div className="flex items-center justify-center min-h-screen">
-      <Loading />
-    </div>
-  );
-
-  // Render profile or no data found message
   return (
-    <div className="p-8 flex flex-col items-center min-h-screen justify-center">
-      {!isAuthenticated ? (
-        <div className="flex justify-center gap-4 flex-col items-center ">
-          <h2 className="text-md">Please log in to access your profile!</h2>
-          <LoginLink>
-            <button className="bg-gradient-to-r from-[#00a000] to-[#005900] px-6 py-3 rounded-lg font-bold transition-all duration-300">
-              Log in
-            </button>
-          </LoginLink>
+    <div className="min-h-screen">
+      {loadingUsers ? (
+        <div className="flex items-center justify-center min-h-screen">
+          <Loading />
         </div>
-      ) : userData ? (
-        <Card className="w-[400px] p-2 bg-gradient-to-b from-stone-950 to-black rounded-lg shadow-xl">
-          <div className="bg-gradient-to-b from-[#26811ecf] to-[#4ff04632] rounded-lg p-3 space-y-2">
-            {/* Header */}
-            <div className="flex items-center justify-center">
-              <div className="flex items-center gap-2">
-                <h2 className="text-xl font-bold">{userData.username}</h2>
-                <Flame className="w-4 h-4 text-red-500" />
-              </div>
-            </div>
-
-            {/* Alien Title */}
-            <div className="flex justify-center">
-              <RainbowButton
-                className={`flex justify-center items-center m-0 p-0 inset-0 rounded-full w-32 animate-moving-gradient ${alienTitleBackgroundClass()}`}
-              >
-                <span className="text-lg text-white font-semibold px-4 py-2">
-                  {userData.alienTitle}
-                </span>
-              </RainbowButton>
-            </div>
-
-            {/* Alien and Profile Images */}
-            <div className="flex justify-center items-center">
-              <div className="relative flex justify-center items-center h-52 w-52 bg-stone-950 rounded-lg">
-                <Image
-                  src={user?.picture || userData.image || "/placeholder-profile.svg"}
-                  alt={userData.name || "Profile Image"}
-                  width={80}
-                  height={80}
-                  className="w-48 h-48 border-4 border-stone-900 object-contain rounded-l-lg"
-                />
-              </div>
-            </div>
-
-            {/* Abilities */}
-            <div className="space-y-3">
-              <div className="bg-[#e8f9e3] p-2 rounded">
-                <h3 className="font-bold text-black text-sm">Type: {userData.alienType}</h3>
-                <h3 className="font-bold text-black text-sm">Power: {userData.alienPower}</h3>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <div className="flex">
-                  {Array(getFlameCount(userData.alienTitle))
-                    .fill(null)
-                    .map((_, i) => (
-                      <Flame key={i} className="w-4 h-4 text-red-500" />
-                    ))}
-                </div>
-                <div>
-                  <h3 className="font-bold text-[#e8f9e3]">{userData.alienName}</h3>
-                  <p className="text-sm text-[#e8f9e3dc]">{userData.alienDescription}</p>
-                </div>
-                <span className="font-bold text-[#e8f9e3] ml-auto">
-                  {userData.followers} Power
-                </span>
-              </div>
-            </div>
-
-            {/* Footer */}
-            <div className="border-t border-gray-400 pt-2">
-              <div className="flex justify-between text-xs">
-                <div>
-                  <span className="font-bold text-[#e8f9e3]">Posts</span>
-                  <div className="flex items-center gap-1 mt-1">
-                    <div className="w-4 h-4 bg-gradient-to-br from-blue-600 to-blue-400 rounded-full" />
-                    <span className="text-[#f1faee]">{userData.posts}</span>
-                  </div>
-                </div>
-                <div>
-                  <span className="font-bold text-[#e8f9e3]">Followers</span>
-                  <div className="flex items-center gap-1 mt-1">
-                    <div className="w-4 h-4 bg-gradient-to-br from-yellow-600 to-yellow-400 rounded-full" />
-                    <span className="text-[#f1faee]">{userData.followers}</span>
-                  </div>
-                </div>
-                <div>
-                  <span className="font-bold text-[#e8f9e3]">Post Frequency</span>
-                  <div className="flex gap-1 mt-1">
-                    <div className="w-4 h-4 bg-gradient-to-br from-gray-600 to-gray-400 rounded-full" />
-                    <span className="text-[#f1faee]">
-                      {calculatePostFrequency(userData.posts, 30)} Posts/Day
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </Card>
       ) : (
-        <div className="text-center text-xl font-semibold text-red-500">
-          No data found in database
-          <Link className="text-blue-500 hover:underline" href="/">
-          Visit Home Page
-          </Link>
+        <div className="min-h-screen flex justify-center flex-col items-center p-4">
+          <div className="w-full max-w-2xl">
+            <h2 className="text-3xl font-bold text-white text-center mb-6">Profiles</h2>
+            
+            {/* Search Bar */}
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => handleSearch(e.target.value)}
+              placeholder="Search for a user..."
+              className="w-full p-2 mb-6 border border-green-600 bg-black bg-stone-800 text-white rounded focus:outline-none focus:ring-2 focus:ring-green-600"
+            />
+
+            {/* Render other users' profiles */}
+            {filteredUsers.length === 0 ? (
+              <p className="text-center">No users available.</p>
+            ) : (
+              filteredUsers.map((user) => (
+                <div
+                  key={user.id}
+                  className="flex items-center justify-between mb-4 p-4 border rounded text-white bg-stone-950"
+                >
+                  <div className="flex items-center">
+                    <Image
+                      width={64}
+                      height={64}
+                      src={user.image || "/default-avatar.png"} // fallback if no pfpUrl
+                      alt={`${user.username}'s profile`}
+                      className="w-14 h-14 rounded-full border-2"
+                    />
+                    <div className="ml-4">
+                      <p className="font-bold text-lg">{user.username}</p>
+                      <div className="flex gap-2">
+                        <p className="text-md text-green-400">{user.alienName}</p>
+                        <p
+                          className={`text-sm font-bold flex justify-center items-center ${alienTitleBackgroundClass(
+                            user.alienTitle
+                          )} text-white px-2  rounded-md`}
+                        >
+                          {user.alienTitle}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  {/* Visit Button */}
+                  <Link href={`/profile/${user.username}`}>
+                    <button className="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 mt-2">
+                      Visit Profile
+                    </button>
+                  </Link>
+                </div>
+              ))
+            )}
+
+            {/* Display messages */}
+            {message && (
+              <p className="text-center mt-6 text-lg font-semibold">{message}</p>
+            )}
+          </div>
         </div>
       )}
     </div>
   );
 };
 
-export default Profile;
+export default Vote;

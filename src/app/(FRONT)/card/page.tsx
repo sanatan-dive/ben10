@@ -8,7 +8,6 @@ import { Card } from "../../../components/ui/card";
 import { RainbowButton } from "@/components/ui/rainbow-button";
 import aliensData from "./alien.json"; // Import the aliens JSON file
 import Loading from "@/components/Loading";
-import { LoginLink, RegisterLink, useKindeAuth } from "@kinde-oss/kinde-auth-nextjs";
 
 interface AlienData {
   name: string;
@@ -23,56 +22,32 @@ function AlienCardContent() {
   const [userData, setUserData] = useState<any>(null);
   const [aiDescription, setAiDescription] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const { user,isAuthenticated } = useKindeAuth();
 
-  // Utility function to assign alien based on user metrics (followers and posts)
-  const assignAlien = (followers: number, posts: number): AlienData => {
-    let eligibleAliens: AlienData[] = [];
-
-    if (followers >= 10000 && posts >= 500) {
-      eligibleAliens = aliensData.filter((alien: AlienData) => alien.title === "Legendary");
-    } else if (followers >= 500 && posts >= 300) {
-      eligibleAliens = aliensData.filter((alien: AlienData) => alien.title === "Epic");
-    } else if (followers >= 1000 || posts >= 100) {
-      eligibleAliens = aliensData.filter((alien: AlienData) => alien.title === "Rare");
-    } else {
-      eligibleAliens = aliensData.filter((alien: AlienData) => alien.title === "Common");
-    }
-
-    // Randomly select one alien from the filtered list
-    if (eligibleAliens.length > 0) {
-      const randomIndex = Math.floor(Math.random() * eligibleAliens.length);
-      return eligibleAliens[randomIndex];
-    }
-
-    // Default alien if no match found
-    return {
-      name: "Wildmutt",
-      title: "Common",
-      type: "Beast",
-      power: "Enhanced Senses",
-      description: "A wild, beast-like alien with extraordinary senses.",
-    };
+  // Utility function to assign alien totally randomly
+  const assignAlien = (): AlienData => {
+    // Randomly select one alien from the entire list
+    const randomIndex = Math.floor(Math.random() * aliensData.length);
+    return aliensData[randomIndex];
   };
 
   useEffect(() => {
     let username = searchParams?.get("name");
-    let image = user?.picture || searchParams?.get("image"); // Use user.picture if logged in, else fallback to searchParams image
+    let image = searchParams?.get("image"); // Use user.picture if logged in, else fallback to searchParams image
     let followers = Number(searchParams?.get("followers"));
     let posts = Number(searchParams?.get("posts"));
-  
+
     if (!username) {
       console.error("Missing username");
       return;
     }
-  
+
     // Assign alien based on user metrics
-    const assignedAlien = assignAlien(followers, posts);
-  
+    const assignedAlien = assignAlien();
+
     // Prepare user data object
     const newUserData = {
       username,
-      image: user?.picture || image,
+      image: image,
       followers,
       posts,
       alienName: assignedAlien.name,
@@ -81,9 +56,9 @@ function AlienCardContent() {
       alienPower: assignedAlien.power,
       alienDescription: assignedAlien.description,
     };
-  
+
     setLoading(true);
-  
+
     // Fetch user data from the backend
     axios
       .get(`/api/getUser?username=${username}`)
@@ -92,48 +67,12 @@ function AlienCardContent() {
       })
       .catch((error) => {
         console.error("Error fetching user data:", error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
-      
-        const name = user?.given_name + " " + user?.family_name;
-      
-        
 
-
-    if (isAuthenticated && username === name ||  username === user?.given_name ) {
-      
-
-   
-      // Save or update user data in the backend
       axios
-        .put("/api/updateTwitterUser", newUserData)
-        .then((response) => {
-          setUserData(response.data.user); // Update the local user data with the response
-        })
-        .catch((error) => {
-          if (error.response?.status === 500) {
-            console.warn("PUT request failed, falling back to POST.");
-            axios
-              .post("/api/saveTwitterUser", newUserData)
-              .then((response) => {
-                setUserData(response.data.user); // Update the local user data with the response
-              })
-              .catch((postError) => {
-                console.error("Error saving user data with POST:", postError);
-              });
-          } else {
-            console.error("Error in PUT request:", error);
-          }
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-    } else {
-      // If not authenticated, just set the prepared user data
-      setUserData(newUserData);
-      setLoading(false);
-    }
-
-    axios
     .post("/api/tweets", { username }, { headers: { "Content-Type": "application/json" } })
     .then((response) => {
       setAiDescription(response.data.summary); // Adjust to your backend's response structure
@@ -142,9 +81,16 @@ function AlienCardContent() {
       console.error("Error fetching user data:", error.response?.data || error.message);
     });
 
-  }, [searchParams, user, isAuthenticated]);
-  
-  
+    axios
+    .post("/api/saveTwitterUser", newUserData, { headers: { "Content-Type": "application/json" } })
+    .then((response) => {
+      console.log("User data saved successfully:", response.data);
+    })
+    .catch((error) => {
+      console.error("Error saving user data:", error);
+    });
+
+  }, [searchParams]);
 
   // Dynamically set the background color for the "Alien Title" section
   const alienTitleBackgroundClass = () => {
@@ -164,7 +110,7 @@ function AlienCardContent() {
 
   const calculatePostFrequency = (posts: number, days: number) => {
     if (days === 0) return "0 Posts/Day"; // Prevent division by zero
-    return ((posts / days)/10).toFixed(2);
+    return ((posts / days) / 10).toFixed(2);
   };
 
   const getFlameCount = (alienTitle: string) => {
@@ -180,6 +126,14 @@ function AlienCardContent() {
       default:
         return 0;
     }
+  };
+
+  const shareOnTwitter = () => {
+    const tweetContent = encodeURIComponent(
+      `${userData.username} has an alien assigned to them! Alien: ${userData.alienName}, Type: ${userData.alienType}, Power: ${userData.alienPower} #alienGame #${userData.alienTitle} https://yourwebsite.com/profile/${userData.username}`
+    );
+    const twitterUrl = `https://twitter.com/intent/tweet?text=${tweetContent}`;
+    window.open(twitterUrl, "_blank");
   };
 
   if (loading || !userData) return <div className="flex items-center min-h-screen justify-center"><Loading /></div>; // Show loading until data is available
@@ -209,7 +163,7 @@ function AlienCardContent() {
           <div className="flex justify-center items-center">
             <div className="relative flex justify-center items-center h-52 w-52 bg-stone-950 rounded-lg">
               <Image
-                src={user?.picture || userData.image || "/placeholder-profile.svg"}
+                src={userData.image || "/placeholder-profile.svg"}
                 alt={userData.name || "Profile Image"}
                 width={80}
                 height={80}
@@ -278,21 +232,22 @@ function AlienCardContent() {
 
           {/* Description */}
           <div className="text-sm italic border border-black text-black p-2 rounded bg-[#e8f9e3]">
-            {aiDescription ? aiDescription :"Loading AI description..." }
+            {aiDescription ? aiDescription : "Loading AI description..."}
           </div>
+        </div>
+
+        {/* Share Button */}
+        <div className="flex justify-center mt-4">
+          <button
+            className="bg-blue-500 text-white py-2 px-4 rounded-full"
+            onClick={shareOnTwitter}
+          >
+            Share on Twitter
+          </button>
         </div>
         
       </Card>
-      {!isAuthenticated && (
-        <div className="mt-4 flex flex-col font-bold gap-2 text-center">
-          Please log in to save your data and enhance your profile picture! 😭
-          <LoginLink>
-              <button className="bg-gradient-to-r from-[#00a000] to-[#005900]   px-4 py-1.5 rounded-lg font-bold transition-all duration-300">
-                Log in
-              </button>
-            </LoginLink>
-        </div>
-      )}
+  
     </div>
     
   );

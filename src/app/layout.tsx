@@ -2,10 +2,11 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { FloatingNav } from "@/components/ui/floating-navbar";
+import Floating from "@/components/ui/floating-navbar";
 import { ThemeProvider } from "@/components/theme-provider";
-import { ModeToggle } from "@/components/ui/theme-btn";
-import { AuthProvider } from "./AuthProvider";
+
+
+
 
 
 // Load local fonts
@@ -37,7 +38,7 @@ export default function RootLayout({
 }) {
   return (
     
-    <AuthProvider>
+    
     <html lang="en" className="min-h-screen">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased h-full`}
@@ -52,21 +53,9 @@ export default function RootLayout({
         >
           
             {/* Floating navigation bar */}
-          
-            
-            <FloatingNav
-              navItems={[
-                { name: "Home", link: "/" },
-                {name:"Profile", link:"/profile"},
-                { name: "Vote", link: "/vote" },
-                
-              
-                { name: "LeaderBoard", link: "/leaderboard" },
-
-              ]}
-            />
-            {/* Mode toggle button */}
-                   
+         
+            <Floating
+            />   
           
           {/* Main content */}
           {children}
@@ -74,6 +63,6 @@ export default function RootLayout({
         </ThemeProvider>
       </body>
     </html>
-    </AuthProvider>
+   
   );
 }

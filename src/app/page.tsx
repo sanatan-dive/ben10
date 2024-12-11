@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import { useKindeAuth } from "@kinde-oss/kinde-auth-nextjs";
 import { motion } from "framer-motion";
 import Loading from "@/components/Loading";
 
@@ -11,9 +10,8 @@ export default function Home() {
   const [userName, setUserName] = useState<string>(""); 
   const [error, setError] = useState<string>(""); 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false); 
-  const [authResolved, setAuthResolved] = useState<boolean>(false); 
+
   const router = useRouter();
-  const { user, isLoading } = useKindeAuth();
 
   // Form submission handler
   const handleSubmit = async (e: React.FormEvent) => {
@@ -24,6 +22,8 @@ export default function Home() {
     try {
       const response = await axios.get(`/api/twitter?username=${userName}`); // Use userName here
       const { name, profile_image_url, followers_count, tweet_count } = response.data;
+      localStorage.setItem("username", JSON.stringify(userName));
+      console.log("item set")
 
       router.push(
         `/card?name=${encodeURIComponent(name)}&image=${encodeURIComponent(
@@ -38,18 +38,8 @@ export default function Home() {
     }
   };
 
-  // Handling authentication state and setting userName on load
-  useEffect(() => {
-    if (!isLoading) {
-      setAuthResolved(true);
-      if (user?.given_name) {
-        setUserName(user.given_name); 
-      }
-    }
-  }, [isLoading, user]);
-
-  // Show loading screen while authenticating or submitting
-  if (isLoading || isSubmitting) {
+  // Show loading screen while submitting
+  if (isSubmitting) {
     return (
       <div className="min-h-screen flex justify-center items-center bg-black text-white">
         <Loading />

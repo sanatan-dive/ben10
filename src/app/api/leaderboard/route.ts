@@ -1,11 +1,10 @@
-
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
 export async function GET(): Promise<Response> {
   try {
-    // Aggregate votes for each user
+    // Fetch users with their alien info and sorting logic
     const leaderboard = await prisma.user.findMany({
       select: {
         id: true,
@@ -13,23 +12,28 @@ export async function GET(): Promise<Response> {
         image: true,
         alienName: true,
         alienTitle: true,
-        votesReceived: {
-          select: { value: true },
-        },
       },
     });
 
-    // Calculate net votes (upvotes - downvotes) for each user
+    // Function to assign priority based on alien title
+    const alienTitlePriority = (alienTitle: string) => {
+      switch (alienTitle) {
+        case "Legendary":
+          return 4;
+        case "Epic":
+          return 3;
+        case "Rare":
+          return 2;
+        case "Common":
+          return 1;
+        default:
+          return 0;
+      }
+    };
+
+    // Sort users based on alienTitle priority
     const rankedUsers = leaderboard
-      .map((user) => ({
-        id: user.id,
-        username: user.username,
-        image: user.image,
-        alienName: user.alienName,
-        alienTitle: user.alienTitle,
-        netVotes: user.votesReceived.reduce((sum, vote) => sum + vote.value, 0),
-      }))
-      .sort((a, b) => b.netVotes - a.netVotes); // Sort by net votes
+      .sort((a, b) => alienTitlePriority(b.alienTitle) - alienTitlePriority(a.alienTitle));
 
     return new Response(JSON.stringify(rankedUsers), {
       status: 200,
