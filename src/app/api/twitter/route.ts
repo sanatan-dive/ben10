@@ -52,16 +52,20 @@ export async function GET(request: Request) {
     await page.waitForSelector('div[aria-label="Opens profile photo"] div[style]', { visible: true });
 
     // Scrape the profile image URL
-    const profileImage = await page.evaluate(() => {
-      const profileImageElement = document.querySelector('div[aria-label="Opens profile photo"] div[style]');
-      if (profileImageElement) {
-        const style = profileImageElement.style.backgroundImage;
-        if (style) {
-          return style.slice(5, -2); // Remove 'url("...")' to get the actual URL
-        }
-      }
-      return null;
-    });
+ // Scrape the profile image URL
+const profileImage = await page.evaluate(() => {
+  const profileImageElement = document.querySelector('div[aria-label="Opens profile photo"] div[style]');
+  if (profileImageElement) {
+    // Cast the element to an HTMLDivElement to access the style property
+    const element = profileImageElement as HTMLElement;
+    const style = element.style.backgroundImage;
+    if (style) {
+      return style.slice(5, -2); // Remove 'url("...")' to get the actual URL
+    }
+  }
+  return null;
+});
+
 
     // Close the browser
     await browser.close();
