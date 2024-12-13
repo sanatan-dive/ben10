@@ -35,7 +35,7 @@ const id = pathName.split("/profile/")[1].trim(); // Split the string at "/profi
         }
       })
       .catch((error) => {
-        console.log("Error fetching user data:", error);
+        // console.log("Error fetching user data:", error);
         setUserData(null); // Handle error by setting data as null
       })
       .finally(() => setLoading(false));

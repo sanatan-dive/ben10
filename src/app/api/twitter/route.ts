@@ -1,10 +1,12 @@
+import { NextResponse } from "next/server";
+import puppeteer from "puppeteer";
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const username = url.searchParams.get("username");
 
   if (!username) {
-    return new Response("Username is required", { status: 400 });
+    return new NextResponse("Username is required", { status: 400 });
   }
 
   try {
@@ -12,7 +14,7 @@ export async function GET(request: Request) {
     const rapidApiKey = process.env.RAPIDAPI_KEY;
 
     if (!rapidApiKey) {
-      return new Response("RapidAPI key is missing", { status: 500 });
+      return new NextResponse("RapidAPI key is missing", { status: 500 });
     }
 
     // Fetch user data from the new RapidAPI endpoint
@@ -26,24 +28,49 @@ export async function GET(request: Request) {
 
     if (!response.ok) {
       console.error(`Error fetching Twitter data: Status ${response.status}, Message: ${response.statusText}`);
-      return new Response(`Error fetching Twitter data: ${response.statusText}`, {
+      return new NextResponse(`Error fetching Twitter data: ${response.statusText}`, {
         status: response.status,
       });
     }
 
-    // Parse the JSON response
+    // Parse the JSON response from RapidAPI
     const jsonResponse = await response.json();
 
     // Check if the user data exists in the response
     if (jsonResponse.status !== "active") {
-      return new Response("User not found or inactive", { status: 404 });
+      return new NextResponse("User not found or inactive", { status: 404 });
     }
 
-    // Extract and format relevant data
+    // Scrape profile image using puppeteer
+    const browser = await puppeteer.launch({ headless: true });
+    const page = await browser.newPage();
+
+    // Go to the Twitter profile and wait for the profile image element
+    await page.goto(`https://twitter.com/${username}`, { waitUntil: "domcontentloaded" });
+    
+    // Wait for the profile image to be loaded
+    await page.waitForSelector('div[aria-label="Opens profile photo"] div[style]', { visible: true });
+
+    // Scrape the profile image URL
+    const profileImage = await page.evaluate(() => {
+      const profileImageElement = document.querySelector('div[aria-label="Opens profile photo"] div[style]');
+      if (profileImageElement) {
+        const style = profileImageElement.style.backgroundImage;
+        if (style) {
+          return style.slice(5, -2); // Remove 'url("...")' to get the actual URL
+        }
+      }
+      return null;
+    });
+
+    // Close the browser
+    await browser.close();
+
+    // Extract and format relevant data from RapidAPI response
     const userData = {
       name: jsonResponse.name,
       username: jsonResponse.profile,
-      profile_image_url: jsonResponse.avatar,
+      profile_image_url: profileImage, // Override with scraped image
       description: jsonResponse.desc,
       followers_count: jsonResponse.sub_count,
       following_count: jsonResponse.friends,
@@ -55,14 +82,14 @@ export async function GET(request: Request) {
       created_at: jsonResponse.created_at,
       user_id: jsonResponse.id,
     };
-    
-    // Return formatted response
-    return new Response(JSON.stringify(userData), {
+
+    // Return the user data with the scraped profile image
+    return new NextResponse(JSON.stringify(userData), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
   } catch (error: any) {
     console.error("Unexpected error occurred:", error.message || error);
-    return new Response("Error fetching Twitter data", { status: 500 });
+    return new NextResponse("Error fetching Twitter data", { status: 500 });
   }
 }

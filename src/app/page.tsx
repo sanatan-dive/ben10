@@ -22,8 +22,9 @@ export default function Home() {
     try {
       const response = await axios.get(`/api/twitter?username=${userName}`); // Use userName here
       const { name, profile_image_url, followers_count, tweet_count } = response.data;
+      // console.log(response.data)
       localStorage.setItem("username", JSON.stringify(userName));
-      console.log("item set")
+      // console.log("item set")
 
       router.push(
         `/card?name=${encodeURIComponent(name)}&image=${encodeURIComponent(

@@ -1,5 +1,0 @@
-todo
-[x] do something of profile picture maybe update if logged in???
-[x] you cannot vote for urself work on that
-[] have new apis or maybe more gemini apis
-[] and yeah ship it
