@@ -124,8 +124,8 @@ const id = pathName.split("/profile/")[1].trim(); // Split the string at "/profi
                 <Image
                   src={userData.image || "/placeholder-profile.svg"}
                   alt={userData.name || "Profile Image"}
-                  width={80}
-                  height={80}
+                  width={200}
+                  height={200}
                   className="w-48 h-48 border-4 border-stone-900 object-contain rounded-l-lg"
                 />
               </div>
