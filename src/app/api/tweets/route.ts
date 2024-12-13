@@ -44,7 +44,7 @@ export async function POST(req: Request): Promise<NextResponse> {
       return NextResponse.json({ error: "Username field is required" }, { status: 400 });
     }
 
-    console.log("Username:", username);
+    // console.log("Username:", username);
 
     // Fetch tweets
     const tweetResponse = await fetch(
