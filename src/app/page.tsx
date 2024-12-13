@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { motion } from "framer-motion";
-import Loading from "@/components/Loading";
+import Unlock from "@/components/Unlock";
 
 export default function Home() {
   const [userName, setUserName] = useState<string>(""); 
@@ -42,7 +42,7 @@ export default function Home() {
   if (isSubmitting) {
     return (
       <div className="min-h-screen flex justify-center items-center bg-black text-white">
-        <Loading />
+        <Unlock />
       </div>
     );
   }
