@@ -7,12 +7,12 @@ services:
     plan: free
     envVars:
       - key: TWITTER_BEARER_TOKEN
-        value: "YAAAAAAAAAAAAAAAAAAAAAGOPxAEAAAAANFmGfmmLwKZ1oncsG4F23SAJshM%3DMNdYYs3Bv8O9h5MUv5dLreZ5Lqwvdq9TJxAsWmCYpsMgiMGNk3"
+        value: YAAAAAAAAAAAAAAAAAAAAAGOPxAEAAAAANFmGfmmLwKZ1oncsG4F23SAJshM%3DMNdYYs3Bv8O9h5MUv5dLreZ5Lqwvdq9TJxAsWmCYpsMgiMGNk3
       - key: GEMINI_API_KEY
-        value: "AIzaSyB9H_mUxwB6fjNQmbRL-up6QN1lfwt69pY"
+        value: AIzaSyB9H_mUxwB6fjNQmbRL-up6QN1lfwt69pY
       - key: GEMINI_API_ENDPOINT
-        value: "https://api.gemini.ai/v1/generate"
+        value: https://api.gemini.ai/v1/generate
       - key: RAPIDAPI_KEY
-        value: "4c725ce4a4msh64573ace192c7fap1615c6jsn86bbf2cc01c1"
+        value: 4c725ce4a4msh64573ace192c7fap1615c6jsn86bbf2cc01c1
       - key: DATABASE_URL
         value: "postgresql://mysaas_owner:BZQqumE85iOH@ep-sparkling-firefly-a1crrux3.ap-southeast-1.aws.neon.tech/ben10?sslmode=require"
