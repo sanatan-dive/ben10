@@ -68,7 +68,7 @@ function AlienCardContent() {
     axios
       .get(`/api/getUser?username=${username}`)
       .then((response) => {
-        setUserData(response.data); // Set the user data from the database
+        setUserData(response.data); 
       })
       .catch((error) => {
         console.error("Error fetching user data:", error);
@@ -89,7 +89,7 @@ function AlienCardContent() {
     axios
       .post("/api/saveTwitterUser", newUserData, { headers: { "Content-Type": "application/json" } })
       .then((response) => {
-        // console.log("User data saved successfully:", response.data);
+        console.log("User data saved successfully:", response.data);
       })
       .catch((error) => {
         console.error("Error saving user data:", error);
