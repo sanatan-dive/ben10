@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import puppeteer from "puppeteer-core";
-import chrome from "@sparticuz/chrome-aws-lambda";
+import { firefox } from "playwright-core"; // Only use Playwright
+// Remove the import of chrome-aws-lambda
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
@@ -42,19 +42,19 @@ export async function GET(request: Request) {
       return new NextResponse("User not found or inactive", { status: 404 });
     }
 
-    // Launch Puppeteer using @sparticuz/chrome-aws-lambda
-    const browser = await puppeteer.launch({
-      args: [...chrome.args],
-      executablePath: await chrome.executablePath,
-      headless: chrome.headless,
+    // Launch Playwright with Firefox
+    const browser = await firefox.launch({
+      headless: true, // Ensure headless mode is set for AWS Lambda or local use
     });
     const page = await browser.newPage();
 
     // Go to the Twitter profile and wait for the profile image element
     await page.goto(`https://twitter.com/${username}`, { waitUntil: "domcontentloaded" });
-    
+
     // Wait for the profile image to be loaded
-    await page.waitForSelector('div[aria-label="Opens profile photo"] div[style]', { visible: true });
+    await page.waitForSelector('div[aria-label="Opens profile photo"] div[style]', {
+      state: 'visible', // Correct way for Playwright
+    });
 
     // Scrape the profile image URL
     const profileImage = await page.evaluate(() => {
