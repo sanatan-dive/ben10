@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
       user_id: jsonResponse.id,
     };
 
-    console.log("User Data:", userData);
+    // console.log("User Data:", userData);
 
     return new NextResponse(JSON.stringify(userData), {
       status: 200,
