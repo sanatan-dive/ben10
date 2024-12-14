@@ -21,13 +21,23 @@ export async function POST(request: Request): Promise<Response> {
     if (!username || !alienName || !alienTitle || !alienType || !alienPower || !alienDescription) {
       return new Response("Invalid data", { status: 400 });
     }
-    
 
-    // Save the user and alien data in the database (directly in the User model)
+    // Check if the user already exists
+    const existingUser = await prisma.user.findUnique({
+      where: { username },
+    });
+
+    if (existingUser) {
+      return new Response(
+        JSON.stringify({ error: "Username already exists" }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    // Save the user and alien data in the database
     const user = await prisma.user.create({
       data: {
         username,
-        
         image: image || "/default-avatar.png", // Use default if no image
         followers,
         posts,

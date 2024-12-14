@@ -27,7 +27,7 @@ function Unlock() {
             className="h-full bg-[#4ff04680]  rounded-full"
             initial={{ width: "0%" }}
             animate={{ width: "100%" }}
-            transition={{ duration: 4.0 }}
+            transition={{ duration: 6.0 }}
           />
         </div>
 
@@ -36,7 +36,7 @@ function Unlock() {
           className="absolute bottom-6 w-64 h-40 bg-gradient-to-r  from-[#26811ecf] to-[#4ff04632] rounded-md shadow-lg flex flex-col items-center justify-center text-center z-10 opacity-0"
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 3.5, duration: 0.5 }}
+          transition={{ delay: 5.5, duration: 0.5 }}
         >
           <h2 className="text-lg font-bold">Alien Card Unlocked!</h2>
  
