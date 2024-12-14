@@ -2,7 +2,7 @@ services:
   - type: web
     name: nextjs-playwright-app
     env: node
-    buildCommand: npm install && npx playwright install && npm run build
+    buildCommand: npm install && npx playwright install && npm run build && npm run postinstall
     startCommand: npm run start
     plan: free
     envVars:
