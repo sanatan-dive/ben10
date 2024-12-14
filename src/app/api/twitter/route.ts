@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { firefox } from "playwright-core"; // Only use Playwright
-// Remove the import of chrome-aws-lambda
+import puppeteer from "puppeteer";
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
@@ -42,32 +41,31 @@ export async function GET(request: Request) {
       return new NextResponse("User not found or inactive", { status: 404 });
     }
 
-    // Launch Playwright with Firefox
-    const browser = await firefox.launch({
-      headless: true, // Ensure headless mode is set for AWS Lambda or local use
-    });
+    // Scrape profile image using puppeteer
+    const browser = await puppeteer.launch({ headless: true });
     const page = await browser.newPage();
 
     // Go to the Twitter profile and wait for the profile image element
     await page.goto(`https://twitter.com/${username}`, { waitUntil: "domcontentloaded" });
-
+    
     // Wait for the profile image to be loaded
-    await page.waitForSelector('div[aria-label="Opens profile photo"] div[style]', {
-      state: 'visible', // Correct way for Playwright
-    });
+    await page.waitForSelector('div[aria-label="Opens profile photo"] div[style]', { visible: true });
 
     // Scrape the profile image URL
-    const profileImage = await page.evaluate(() => {
-      const profileImageElement = document.querySelector('div[aria-label="Opens profile photo"] div[style]');
-      if (profileImageElement) {
-        const element = profileImageElement as HTMLElement;
-        const style = element.style.backgroundImage;
-        if (style) {
-          return style.slice(5, -2); // Remove 'url("...")' to get the actual URL
-        }
-      }
-      return null;
-    });
+ // Scrape the profile image URL
+const profileImage = await page.evaluate(() => {
+  const profileImageElement = document.querySelector('div[aria-label="Opens profile photo"] div[style]');
+  if (profileImageElement) {
+    // Cast the element to an HTMLDivElement to access the style property
+    const element = profileImageElement as HTMLElement;
+    const style = element.style.backgroundImage;
+    if (style) {
+      return style.slice(5, -2); // Remove 'url("...")' to get the actual URL
+    }
+  }
+  return null;
+});
+
 
     // Close the browser
     await browser.close();
