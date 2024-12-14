@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 const prisma = new PrismaClient();
 
@@ -54,6 +55,14 @@ export async function POST(request: Request): Promise<Response> {
       { status: 200, headers: { "Content-Type": "application/json" } }
     );
   } catch (error) {
+    // Specific handling for Prisma unique constraint violation
+    if (error instanceof PrismaClientKnownRequestError && error.code === 'P2002') {
+      return new Response(
+        JSON.stringify({ error: "Username already exists" }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
     console.error("Error saving user and alien data:", error);
     return new Response("Internal server error", { status: 500 });
   }

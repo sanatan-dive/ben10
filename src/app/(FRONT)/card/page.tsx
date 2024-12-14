@@ -71,7 +71,7 @@ function AlienCardContent() {
         setUserData(response.data); 
       })
       .catch((error) => {
-        console.error("Error fetching user data:", error);
+        console.log("Error fetching user data:", error);
       })
       .finally(() => {
         setLoading(false);
@@ -92,7 +92,7 @@ function AlienCardContent() {
         console.log("User data saved successfully:", response.data);
       })
       .catch((error) => {
-        console.error("Error saving user data:", error);
+        console.log("Error saving user data:", error);
       });
   }, [searchParams]);
 
