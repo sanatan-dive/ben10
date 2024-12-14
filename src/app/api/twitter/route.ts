@@ -1,25 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { chromium, firefox, webkit, BrowserType } from "playwright";
 
 export async function GET(request: NextRequest) {
   const url = new URL(request.url);
   const username = url.searchParams.get("username");
-  const browserTypeParam = url.searchParams.get("browser") || "firefox"; // Default to Firefox
-
-  // Define a union type for allowed browser types
-  const allowedBrowserTypes = ["chromium", "firefox", "webkit"] as const;
-  type BrowserTypeName = (typeof allowedBrowserTypes)[number];
-
-  // Validate browserTypeParam against allowedBrowserTypes
-  const isValidBrowserType = (type: string): type is BrowserTypeName =>
-    allowedBrowserTypes.includes(type as BrowserTypeName);
-
+  
   if (!username) {
     return new NextResponse("Username is required", { status: 400 });
-  }
-
-  if (!isValidBrowserType(browserTypeParam)) {
-    return new NextResponse(`Invalid browser type: ${browserTypeParam}`, { status: 400 });
   }
 
   try {
@@ -56,36 +42,15 @@ export async function GET(request: NextRequest) {
       return new NextResponse("User not found or inactive", { status: 404 });
     }
 
-    // Select the browser type dynamically
-    const browserType: BrowserType = browserTypeParam === "chromium"
-      ? chromium
-      : browserTypeParam === "firefox"
-      ? firefox
-      : webkit;
+    const userImage = jsonResponse.avatar.replace('_normal', '_200x200');
 
-    const browser = await browserType.launch({ headless: true });
-    const page = await browser.newPage();
 
-    await page.goto(`https://twitter.com/${username}`, { waitUntil: "domcontentloaded" });
-    await page.waitForSelector('div[aria-label="Opens profile photo"] div[style]', { state: "visible" });
 
-    const profileImage = await page.evaluate(() => {
-      const element = document.querySelector('div[aria-label="Opens profile photo"] div[style]');
-      if (element && element instanceof HTMLElement) {
-        const backgroundImage = element.style.backgroundImage;
-        if (backgroundImage) {
-          return backgroundImage.slice(5, -2);
-        }
-      }
-      return null;
-    });
-
-    await browser.close();
 
     const userData = {
       name: jsonResponse.name,
       username: jsonResponse.profile,
-      profile_image_url: profileImage,
+      profile_image_url: userImage, // Assuming 'profile_image' is the field for the profile picture
       description: jsonResponse.desc,
       followers_count: jsonResponse.sub_count,
       following_count: jsonResponse.friends,
@@ -97,6 +62,8 @@ export async function GET(request: NextRequest) {
       created_at: jsonResponse.created_at,
       user_id: jsonResponse.id,
     };
+
+    console.log("User Data:", userData);
 
     return new NextResponse(JSON.stringify(userData), {
       status: 200,
