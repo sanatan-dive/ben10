@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && next build",
+    "postinstall": "apt-get update && apt-get install -y libicu66 libwebp6 libffi7",
     "start": "next start",
     "lint": "next lint"
   },
