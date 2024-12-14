@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
-import { chromium } from "playwright"; // Import Playwright
+import { NextResponse } from "next/server";
+import puppeteer from "puppeteer-core";
+import chrome from "@sparticuz/chrome-aws-lambda";
 
-export async function GET(request: NextRequest) {
+export async function GET(request: Request) {
   const url = new URL(request.url);
   const username = url.searchParams.get("username");
 
@@ -41,22 +42,29 @@ export async function GET(request: NextRequest) {
       return new NextResponse("User not found or inactive", { status: 404 });
     }
 
-    // Use Playwright to scrape the profile image
-    const browser = await chromium.launch({ headless: true }); // Launch Chromium
+    // Launch Puppeteer using @sparticuz/chrome-aws-lambda
+    const browser = await puppeteer.launch({
+      args: [...chrome.args],
+      executablePath: await chrome.executablePath,
+      headless: chrome.headless,
+    });
     const page = await browser.newPage();
 
     // Go to the Twitter profile and wait for the profile image element
     await page.goto(`https://twitter.com/${username}`, { waitUntil: "domcontentloaded" });
-
+    
     // Wait for the profile image to be loaded
-    await page.waitForSelector('div[aria-label="Opens profile photo"] div[style]', { state: 'attached' });
+    await page.waitForSelector('div[aria-label="Opens profile photo"] div[style]', { visible: true });
 
     // Scrape the profile image URL
     const profileImage = await page.evaluate(() => {
       const profileImageElement = document.querySelector('div[aria-label="Opens profile photo"] div[style]');
       if (profileImageElement) {
-        const style = (profileImageElement as HTMLElement).style.backgroundImage;
-        return style ? style.slice(5, -2) : null;
+        const element = profileImageElement as HTMLElement;
+        const style = element.style.backgroundImage;
+        if (style) {
+          return style.slice(5, -2); // Remove 'url("...")' to get the actual URL
+        }
       }
       return null;
     });
@@ -68,7 +76,7 @@ export async function GET(request: NextRequest) {
     const userData = {
       name: jsonResponse.name,
       username: jsonResponse.profile,
-      profile_image_url: profileImage, // Scraped image URL
+      profile_image_url: profileImage, // Override with scraped image
       description: jsonResponse.desc,
       followers_count: jsonResponse.sub_count,
       following_count: jsonResponse.friends,
