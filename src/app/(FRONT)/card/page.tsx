@@ -77,14 +77,14 @@ function AlienCardContent() {
         setLoading(false);
       });
 
-    // axios
-    //   .post("/api/tweets", { username }, { headers: { "Content-Type": "application/json" } })
-    //   .then((response) => {
-    //     setAiDescription(response.data.summary); // Adjust to your backend's response structure
-    //   })
-    //   .catch((error) => {
-    //     console.error("Error fetching user data:", error.response?.data || error.message);
-    //   });
+    axios
+      .post("/api/tweets", { username }, { headers: { "Content-Type": "application/json" } })
+      .then((response) => {
+        setAiDescription(response.data.summary); // Adjust to your backend's response structure
+      })
+      .catch((error) => {
+        console.error("Error fetching user data:", error.response?.data || error.message);
+      });
 
     axios
       .post("/api/saveTwitterUser", newUserData, { headers: { "Content-Type": "application/json" } })
