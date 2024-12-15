@@ -1,9 +1,10 @@
 import { PrismaClient } from "@prisma/client";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { NextRequest, NextResponse } from "next/server";
 
 const prisma = new PrismaClient();
 
-export async function POST(request: Request): Promise<Response> {
+export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     // Parse the request body
     const {
@@ -20,7 +21,7 @@ export async function POST(request: Request): Promise<Response> {
 
     // Validate the input data
     if (!username || !alienName || !alienTitle || !alienType || !alienPower || !alienDescription) {
-      return new Response("Invalid data", { status: 400 });
+      return new NextResponse("Invalid data", { status: 400 });
     }
 
     // Check if the user already exists
@@ -29,7 +30,7 @@ export async function POST(request: Request): Promise<Response> {
     });
 
     if (existingUser) {
-      return new Response(
+      return new NextResponse(
         JSON.stringify({ error: "Username already exists" }),
         { status: 400, headers: { "Content-Type": "application/json" } }
       );
@@ -50,20 +51,20 @@ export async function POST(request: Request): Promise<Response> {
       },
     });
 
-    return new Response(
+    return new NextResponse(
       JSON.stringify({ message: "User and Alien data saved successfully", user }),
       { status: 200, headers: { "Content-Type": "application/json" } }
     );
   } catch (error) {
     // Specific handling for Prisma unique constraint violation
     if (error instanceof PrismaClientKnownRequestError && error.code === 'P2002') {
-      return new Response(
+      return new NextResponse(
         JSON.stringify({ error: "Username already exists" }),
         { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
 
     console.error("Error saving user and alien data:", error);
-    return new Response("Internal server error", { status: 500 });
+    return new NextResponse("Internal server error", { status: 500 });
   }
 }

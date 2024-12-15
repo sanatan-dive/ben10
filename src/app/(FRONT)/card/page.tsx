@@ -37,7 +37,6 @@ function AlienCardContent() {
   useEffect(() => {
     let username = searchParams?.get("name");
     let image = searchParams?.get("image"); 
-    // console.log(image)
     let followers = Number(searchParams?.get("followers"));
     let posts = Number(searchParams?.get("posts"));
 
@@ -76,23 +75,21 @@ function AlienCardContent() {
       .finally(() => {
         setLoading(false);
       });
-
-    axios
-      .post("/api/tweets", { username }, { headers: { "Content-Type": "application/json" } })
-      .then((response) => {
-        setAiDescription(response.data.summary); // Adjust to your backend's response structure
-      })
-      .catch((error) => {
-        console.error("Error fetching user data:", error.response?.data || error.message);
-      });
-
     axios
       .post("/api/saveTwitterUser", newUserData, { headers: { "Content-Type": "application/json" } })
       .then((response) => {
-        console.log("User data saved successfully:", response.data);
+        setUserData(response.data);
       })
       .catch((error) => {
         console.log("Error saving user data:", error);
+      });
+      axios
+      .post("/api/tweets", { username }, { headers: { "Content-Type": "application/json" } })
+      .then((response) => {
+        setAiDescription(response.data.summary); 
+      })
+      .catch((error) => {
+        console.error("Error fetching user data:", error.response?.data || error.message);
       });
   }, [searchParams]);
 
@@ -134,7 +131,7 @@ function AlienCardContent() {
 
   const shareOnTwitter = () => {
     const tweetContent = encodeURIComponent(
-      `${userData.username} has an alien assigned to them! Alien: ${userData.alienName}, Type: ${userData.alienType}, Power: ${userData.alienPower} #alienGame #${userData.alienTitle} https://yourwebsite.com/profile/${userData.username}`
+      `${userData.username} has an alien assigned to them! Alien: ${userData.alienName}, Type: ${userData.alienType}, Power: ${userData.alienPower} #alienGame #${userData.alienTitle} https://cc/profile/${userData.username}`
     );
     const twitterUrl = `https://twitter.com/intent/tweet?text=${tweetContent}`;
     window.open(twitterUrl, "_blank");
@@ -154,7 +151,9 @@ function AlienCardContent() {
     }
   };
 
-  if (loading || !userData) return <div className="flex items-center min-h-screen justify-center"><Loading /></div>; // Show loading until data is available
+  console.log(userData)
+
+  if (loading || !userData ) return <div className="flex items-center min-h-screen justify-center"><Loading /></div>; 
 
   return (
     <div className="p-8 mt-2 flex flex-col items-center justify-center">
@@ -168,7 +167,9 @@ function AlienCardContent() {
     ease: "easeInOut", // Smooth easing
     times: [0, 0.5, 1], // Timing for each phase of animation
   }}
-  onAnimationComplete={() => setShowContent(true)}
+  onAnimationComplete={() => {
+    if (!loading) setShowContent(true);
+  }}
   
 >
       <Card ref={cardRef} className="w-full sm:w-[400px] p-2 bg-gradient-to-b from-stone-950 to-black rounded-lg shadow-xl">

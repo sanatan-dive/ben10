@@ -1,6 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
-import aliensData from "./alien.json"; 
+import aliensData from "./alien.json";
 
 interface RequestBody {
   username: string;
@@ -21,7 +21,7 @@ export async function POST(req: Request): Promise<NextResponse> {
 
     // Initialize the generative AI client
     const genAI = new GoogleGenerativeAI(geminiApiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" })
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
     // Parse the request body
     let data: RequestBody;
@@ -31,20 +31,17 @@ export async function POST(req: Request): Promise<NextResponse> {
         console.error("Empty body received");
         return NextResponse.json({ error: "Request body is missing" }, { status: 400 });
       }
-    
+
       data = JSON.parse(rawBody);
     } catch (err) {
       console.error("Error parsing JSON body:", err);
       return NextResponse.json({ error: "Invalid JSON format in request body" }, { status: 400 });
     }
-    
 
     const username = data.username;
     if (!username) {
       return NextResponse.json({ error: "Username field is required" }, { status: 400 });
     }
-
-    // console.log("Username:", username);
 
     // Fetch tweets
     const tweetResponse = await fetch(
@@ -85,16 +82,15 @@ export async function POST(req: Request): Promise<NextResponse> {
 
     // Combine tweets into a single prompt
     const combinedTweets = tweetTexts.join("\n");
-    const prompt = `${combinedTweets}\n\nBased on these tweets, roast or insult this user give reply in normal human language also keep it short like a tweet. give response in second person perspective for example using you instead of this`;
+    const prompt = `${combinedTweets}\n\nBased on these tweets, provide a humorous roast in a lighthearted observation in normal human language. Keep it short, like a tweet.`;
 
     // Generate content using the Gemini model
     const genAIResult = await model.generateContent(prompt);
 
-    const summary = await genAIResult.response?.text();
+  
 
-
-
-    // Return the generated summary
+    // Extract the generated content
+    const summary = (await genAIResult.response?.text()) || "No content generated.";
     return NextResponse.json({ summary });
 
   } catch (error) {
