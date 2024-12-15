@@ -34,6 +34,7 @@ export async function GET(request: NextRequest) {
         status: response.status,
       });
     }
+    
 
     // Parse the JSON response from RapidAPI
     const jsonResponse = await response.json();
@@ -45,12 +46,10 @@ export async function GET(request: NextRequest) {
     const userImage = jsonResponse.avatar.replace('_normal', '_200x200');
 
 
-
-
     const userData = {
       name: jsonResponse.name,
       username: jsonResponse.profile,
-      profile_image_url: userImage, // Assuming 'profile_image' is the field for the profile picture
+      profile_image_url: userImage, 
       description: jsonResponse.desc,
       followers_count: jsonResponse.sub_count,
       following_count: jsonResponse.friends,

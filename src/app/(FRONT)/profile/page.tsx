@@ -98,7 +98,7 @@ const Vote = () => {
                     <Image
                       width={64}
                       height={64}
-                      src={user.image || "/default-avatar.png"} 
+                      src={user.image } 
                       alt={`${user.username}'s profile`}
                       className="w-14 h-14 rounded-full border-2"
                     />

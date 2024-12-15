@@ -195,8 +195,8 @@ function AlienCardContent() {
           <div className="flex justify-center items-center">
             <div className="relative flex justify-center items-center h-40 sm:h-52 w-40 sm:w-52 bg-stone-950 rounded-lg">
               <Image
-                src={userData.image || "/placeholder-profile.svg"}
-                alt={userData.name || "Profile Image"}
+                src={userData.image }
+                alt="{userData.name} Image"
                 width={200}
                 height={200}
                 className="w-36 h-36 sm:w-48 sm:h-48 border-4 border-stone-900  object-contain rounded-l-lg"
