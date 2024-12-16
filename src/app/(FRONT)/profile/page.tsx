@@ -96,9 +96,9 @@ const Vote = () => {
                 >
                   <div className="flex items-center">
                     <Image
-                      width={64}
-                      height={64}
-                      src={user.image } 
+                      width={200}
+                      height={200}
+                      src={user.image} 
                       alt={`${user.username}'s profile`}
                       className="w-14 h-14 rounded-full border-2"
                     />

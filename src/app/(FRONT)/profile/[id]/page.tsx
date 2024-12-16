@@ -122,8 +122,8 @@ const id = pathName.split("/profile/")[1].trim(); // Split the string at "/profi
             <div className="flex justify-center items-center">
               <div className="relative flex justify-center items-center h-52 w-52 bg-stone-950 rounded-lg">
                 <Image
-                  src={userData.image }
-                  alt={userData.name }
+                  src={userData.image}
+                  alt={userData.name}
                   width={200}
                   height={200}
                   className="w-48 h-48 border-4 border-stone-900 object-contain rounded-l-lg"

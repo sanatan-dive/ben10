@@ -67,7 +67,7 @@ function AlienCardContent() {
       .then((response) => {
         setUserData(response.data);
       })
-      .catch((error) => {
+      .catch((error ) => {
         console.error("Error fetching user data:", error.response?.data || error.message);
       })
       .finally(() => {
@@ -79,6 +79,7 @@ function AlienCardContent() {
       .post("/api/saveTwitterUser", newUserData)
       .then((response) => {
         setUserData(response.data);
+        setShowContent(true);
       })
       .catch((error) => {
         console.error("Error saving user data:", error.response?.data || error.message);
@@ -201,7 +202,7 @@ function AlienCardContent() {
           <div className="flex justify-center items-center">
             <div className="relative flex justify-center items-center h-40 sm:h-52 w-40 sm:w-52 bg-stone-950 rounded-lg">
               <Image
-                src={userData.image }
+                src={userData.image || "/alien.png"} 
                 alt="{userData.name} Image"
                 width={200}
                 height={200}
