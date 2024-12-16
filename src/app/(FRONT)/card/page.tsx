@@ -3,7 +3,7 @@ import { Suspense, useEffect, useState, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import axios from "axios";
 import Image from "next/image";
-import { Flame} from "lucide-react";
+import { Flame } from "lucide-react";
 import { Card } from "../../../components/ui/card";
 import { RainbowButton } from "@/components/ui/rainbow-button";
 import aliensData from "./alien.json"; // Import the aliens JSON file
@@ -11,6 +11,7 @@ import Loading from "@/components/Loading";
 import { toPng } from "html-to-image"; // Import html-to-image
 import { FaDownload, FaSquareXTwitter } from "react-icons/fa6";
 import { motion } from "framer-motion";
+
 interface AlienData {
   name: string;
   title: string;
@@ -24,34 +25,31 @@ function AlienCardContent() {
   const [userData, setUserData] = useState<any>(null);
   const [aiDescription, setAiDescription] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const cardRef = useRef<HTMLDivElement>(null); 
-  const [showContent,setShowContent] = useState(false)
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [showContent, setShowContent] = useState(false);
 
   // Utility function to assign alien totally randomly
   const assignAlien = (): AlienData => {
-    // Randomly select one alien from the entire list
     const randomIndex = Math.floor(Math.random() * aliensData.length);
     return aliensData[randomIndex];
   };
 
   useEffect(() => {
-    let username = searchParams?.get("name");
-    let image = searchParams?.get("image"); 
-    let followers = Number(searchParams?.get("followers"));
-    let posts = Number(searchParams?.get("posts"));
+    const username = searchParams?.get("name");
+    const image = searchParams?.get("image");
+    const followers = Number(searchParams?.get("followers"));
+    const posts = Number(searchParams?.get("posts"));
 
     if (!username) {
       console.error("Missing username");
       return;
     }
 
-    // Assign alien based on user metrics
     const assignedAlien = assignAlien();
 
-    // Prepare user data object
     const newUserData = {
       username,
-      image: image,
+      image,
       followers,
       posts,
       alienName: assignedAlien.name,
@@ -63,33 +61,41 @@ function AlienCardContent() {
 
     setLoading(true);
 
-    // Fetch user data from the backend
+    // Fetch user data
     axios
       .get(`/api/getUser?username=${username}`)
-      .then((response) => {
-        setUserData(response.data); 
-      })
-      .catch((error) => {
-        console.log("Error fetching user data:", error);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-    axios
-      .post("/api/saveTwitterUser", newUserData, { headers: { "Content-Type": "application/json" } })
       .then((response) => {
         setUserData(response.data);
       })
       .catch((error) => {
-        console.log("Error saving user data:", error);
+        console.error("Error fetching user data:", error.response?.data || error.message);
+      })
+      .finally(() => {
+        setLoading(false);
       });
-      axios
-      .post("/api/tweets", { username }, { headers: { "Content-Type": "application/json" } })
+
+    // Save user data and then fetch updated user data
+    axios
+      .post("/api/saveTwitterUser", newUserData)
       .then((response) => {
-        setAiDescription(response.data.summary); 
+        setUserData(response.data);
       })
       .catch((error) => {
-        console.error("Error fetching user data:", error.response?.data || error.message);
+        console.error("Error saving user data:", error.response?.data || error.message);
+      });
+
+    // Fetch AI description from tweets
+    axios
+      .post(
+        "/api/tweets",
+        { username },
+        { headers: { "Content-Type": "application/json" } }
+      )
+      .then((response) => {
+        setAiDescription(response.data.summary);
+      })
+      .catch((error) => {
+        console.error("Error fetching AI description:", error.response?.data || error.message);
       });
   }, [searchParams]);
 
