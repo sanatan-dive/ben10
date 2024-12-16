@@ -158,7 +158,7 @@ function AlienCardContent() {
     }
   };
 
-  console.log(userData)
+  // console.log(userData)
 
   if (loading || !userData ) return <div className="flex items-center min-h-screen justify-center"><Loading /></div>; 
 

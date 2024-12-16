@@ -10,6 +10,7 @@ export async function POST(req: Request): Promise<NextResponse> {
   try {
     const geminiApiKey = process.env.GEMINI_API_KEY;
     const rapidApiKey = process.env.RAPIDAPI_KEY;
+   
 
     if (!geminiApiKey) {
       throw new Error("GEMINI_API_KEY is not set in the environment variables.");
