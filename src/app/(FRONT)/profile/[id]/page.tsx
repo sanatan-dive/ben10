@@ -11,22 +11,25 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 const Profile = () => {
+  const searchParams = useSearchParams();
   const [userData, setUserData] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const pathName = usePathname(); // Correct way to use useSearchParams
 
   useEffect(() => {
 
-    
-     // The URL string
-const id = pathName.split("/profile/")[1].trim(); // Split the string at "/profile/" and get the second part
+
+   
+    const username = searchParams?.get("name");
+    console.log("searchParams",searchParams)
+    console.log("Username:", username)
 
 
-    if (!id) return; // If id is undefined, exit early
+   
 
     // Fetch user data based on the username (id)
     axios
-      .get(`/api/getUser?username=${id}`)
+      .get(`/api/getUser?username=${username}`)
       .then((response) => {
         if (response.data) {
           setUserData(response.data); // Set the user data from the database
@@ -39,7 +42,9 @@ const id = pathName.split("/profile/")[1].trim(); // Split the string at "/profi
         setUserData(null); // Handle error by setting data as null
       })
       .finally(() => setLoading(false));
-  }, [pathName]); // Use searchParams as a dependency
+
+      console.log(userData)
+  }, [searchParams]); // Use searchParams as a dependency
 
   // Alien title background
   const alienTitleBackgroundClass = () => {

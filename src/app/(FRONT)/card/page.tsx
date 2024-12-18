@@ -20,7 +20,7 @@ interface AlienData {
   description: string;
 }
 
-function AlienCardContent() {
+function AlienCard() {
   const searchParams = useSearchParams();
   const [userData, setUserData] = useState<any>(null);
   const [aiDescription, setAiDescription] = useState<string | null>(null);
@@ -35,6 +35,7 @@ function AlienCardContent() {
   };
 
   useEffect(() => {
+    console.log("searchParams",searchParams)
     const username = searchParams?.get("name");
     const image = searchParams?.get("image");
     const followers = Number(searchParams?.get("followers"));
@@ -98,6 +99,8 @@ function AlienCardContent() {
       .catch((error) => {
         console.error("Error fetching AI description:", error.response?.data || error.message);
       });
+
+      setUserData(newUserData)
   }, [searchParams]);
 
   // Dynamically set the background color for the "Alien Title" section
@@ -306,10 +309,4 @@ function AlienCardContent() {
   );
 }
 
-export default function AlienCard() {
-  return (
-    <Suspense fallback={<Loading />}>
-      <AlienCardContent />
-    </Suspense>
-  );
-}
+export default AlienCard

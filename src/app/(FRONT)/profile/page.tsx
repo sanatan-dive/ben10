@@ -117,7 +117,7 @@ const Vote = () => {
                     </div>
                   </div>
                   {/* Visit Button */}
-                  <Link href={`/profile/${user.username}`}>
+                  <Link href={`/profile/id?name=${user.username}`}>
   <button className="bg-gradient-to-r from-[#00a000] to-[#005900] text-white px-4 py-3 scale-[80%] sm:scale-100 rounded-full hover:bg-gradient-to-r hover:from-[#00a000] hover:to-[#005900] mt-2 sm:px-8 sm:py-4 sm:mt-0">
     Visit Profile
   </button>
