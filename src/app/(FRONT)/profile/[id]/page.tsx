@@ -21,8 +21,11 @@ const Profile = () => {
 
    
     const username = searchParams?.get("name");
-    console.log("searchParams",searchParams)
-    console.log("Username:", username)
+   
+    if(!username){
+      console.error("Missing username");
+      return;
+    }
 
 
    
@@ -43,7 +46,7 @@ const Profile = () => {
       })
       .finally(() => setLoading(false));
 
-      console.log(userData)
+      // console.log(userData)
   }, [searchParams]); // Use searchParams as a dependency
 
   // Alien title background

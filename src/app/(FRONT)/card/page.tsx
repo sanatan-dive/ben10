@@ -35,7 +35,7 @@ function AlienCard() {
   };
 
   useEffect(() => {
-    console.log("searchParams",searchParams)
+
     const username = searchParams?.get("name");
     const image = searchParams?.get("image");
     const followers = Number(searchParams?.get("followers"));
