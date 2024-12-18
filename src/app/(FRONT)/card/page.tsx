@@ -20,7 +20,7 @@ interface AlienData {
   description: string;
 }
 
-function AlienCard() {
+function AlienCardContent() {
   const searchParams = useSearchParams();
   const [userData, setUserData] = useState<any>(null);
   const [aiDescription, setAiDescription] = useState<string | null>(null);
@@ -309,4 +309,10 @@ function AlienCard() {
   );
 }
 
-export default AlienCard
+export default function AlienCard(){
+  return (
+    <Suspense>
+      <AlienCardContent />
+    </Suspense>
+  )
+}
