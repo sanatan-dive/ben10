@@ -61,6 +61,7 @@ function AlienCardContent() {
     };
 
     setLoading(true);
+    setUserData(newUserData)
 
     // Fetch user data
     axios
@@ -79,7 +80,6 @@ function AlienCardContent() {
     axios
       .post("/api/saveTwitterUser", newUserData)
       .then((response) => {
-        setUserData(response.data);
         setShowContent(true);
       })
       .catch((error) => {
@@ -100,7 +100,9 @@ function AlienCardContent() {
         console.error("Error fetching AI description:", error.response?.data || error.message);
       });
 
-      setUserData(newUserData)
+      
+      
+
   }, [searchParams]);
 
   // Dynamically set the background color for the "Alien Title" section
