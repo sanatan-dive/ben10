@@ -94,15 +94,16 @@ const Leaderboard = () => {
             <p className="text-center text-white">No users found.</p>
           ) : (
             <ul className="space-y-6">
-              {filteredLeaderboard.map((user) => (
+              {filteredLeaderboard.map((user, index) => (
                 <li
                   key={user.id}
                   className="flex items-center justify-between p-4 bg-stone-950 border-2 rounded-lg shadow-md"
                 >
-                  <div className="flex items-center space-x-4">
+                  <div className="flex items-center gap-2 space-x-4">
+                    <span className="text-lg font-bold text-green-400">#{index + 1}</span> {/* Rank */}
                     <Image
-                     width={64}
-                     height={64}
+                      width={200}
+                      height={200}
                       src={user.image}
                       alt={`${user.username}'s profile`}
                       className="w-14 h-14 rounded-full border-2"
