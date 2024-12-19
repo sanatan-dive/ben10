@@ -162,7 +162,10 @@ function AlienCardContent() {
 
   const shareOnTwitter = () => {
     const tweetContent = encodeURIComponent(
-      `${userData.username} has an alien assigned to them! Alien: ${userData.alienName}, Type: ${userData.alienType}, Power: ${userData.alienPower} #alienGame #${userData.alienTitle} https://ben10ify.vercel.app/profile/id?name=${userData.username}`
+      `${userData.username} has an alien assigned to them! Alien: ${userData.alienName},Title: ${userData.alienTitle} , Type: ${userData.alienType}, get your own card at https://ben10ify.vercel.app/
+      // 
+      // @Sanatan_dive`
+
     );
     const twitterUrl = `https://twitter.com/intent/tweet?text=${tweetContent}`;
     window.open(twitterUrl, "_blank");
