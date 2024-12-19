@@ -164,7 +164,7 @@ function AlienCardContent() {
     const tweetContent = encodeURIComponent(
       `${userData.username} has an alien assigned to them! Alien: ${userData.alienName},Title: ${userData.alienTitle} , Type: ${userData.alienType}, get your own card at https://ben10ify.vercel.app/
        
-       @Sanatan_dive`
+       credits: @Sanatan_dive`
 
     );
     const twitterUrl = `https://twitter.com/intent/tweet?text=${tweetContent}`;
