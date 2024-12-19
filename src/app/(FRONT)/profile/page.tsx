@@ -30,7 +30,8 @@ const Vote = () => {
       try {
         const response = await axios.get("/api/getAllUser");
         setUsers(response.data);
-        setFilteredUsers(response.data);
+        const reverse = response.data.reverse();
+        setFilteredUsers(reverse);
       } catch (error) {
         setMessage("Unable to fetch users.");
       } finally {
