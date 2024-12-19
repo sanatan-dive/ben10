@@ -29,11 +29,7 @@ function AlienCardContent() {
   const [showContent, setShowContent] = useState(false);
 
   // Utility function to assign alien totally randomly
-  const assignAlien = (): AlienData => {
-    const randomIndex = Math.floor(Math.random() * aliensData.length);
-    return aliensData[randomIndex];
-  };
-
+  
   useEffect(() => {
 
     const username = searchParams?.get("name");
@@ -45,6 +41,29 @@ function AlienCardContent() {
       console.error("Missing username");
       return;
     }
+
+    const assignAlien = (): AlienData => {
+      const legendaryAliens = aliensData.filter((alien) => alien.title === "Legendary");
+      const epicAliens = aliensData.filter((alien) => alien.title === "Epic");
+      const rareAliens = aliensData.filter((alien) => alien.title === "Rare");
+      const commonAliens = aliensData.filter((alien) => alien.title === "Common");
+    
+      if ((posts / followers > 8) || (posts > 5000 && followers > 1000)) {
+        const randomIndex = Math.floor(Math.random() * legendaryAliens.length);
+        return legendaryAliens[randomIndex];
+      } else if ((posts / followers > 5) || (posts > 2000 && followers > 500)) {
+        const randomIndex = Math.floor(Math.random() * epicAliens.length);
+        return epicAliens[randomIndex];
+      } else if ((posts / followers > 3) || (posts > 500 && followers > 200)) {
+        const randomIndex = Math.floor(Math.random() * rareAliens.length);
+        return rareAliens[randomIndex];
+      } else {
+        const randomIndex = Math.floor(Math.random() * commonAliens.length);
+        return commonAliens[randomIndex];
+      }
+      
+    };
+    
 
     const assignedAlien = assignAlien();
 
