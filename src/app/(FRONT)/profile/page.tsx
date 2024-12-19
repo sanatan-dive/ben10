@@ -72,7 +72,7 @@ const Vote = () => {
           <Loading />
         </div>
       ) : (
-        <div className="min-h-screen flex justify-center flex-col items-center p-4">
+        <div className="min-h-screen flex justify-center mb-24 flex-col items-center p-4">
           <div className="w-full max-w-2xl">
             <h2 className="text-3xl font-bold text-white text-center mb-6">Profiles</h2>
             

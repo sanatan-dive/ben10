@@ -78,7 +78,7 @@ const Leaderboard = () => {
       {loadingUsers ? (
         <Loading />
       ) : (
-        <div className="w-full max-w-2xl p-6 bg-stone-900 rounded-xl shadow-xl border border-green-600">
+        <div className="w-full max-w-2xl p-6 mb-24 bg-stone-900 rounded-xl shadow-xl border border-green-600">
           <h2 className="text-4xl font-extrabold text-center text-white mb-6">Leaderboard</h2>
           {/* Search Box */}
           <div className="mb-6">
