@@ -54,7 +54,7 @@ function AlienCardContent() {
       } else if ((posts / followers > 5) || (posts > 2000 && followers > 500)) {
         const randomIndex = Math.floor(Math.random() * epicAliens.length);
         return epicAliens[randomIndex];
-      } else if ((posts / followers > 3) || (posts > 500 && followers > 200)) {
+      } else if ((posts / followers > 3) || (posts > 200 && followers > 200)) {
         const randomIndex = Math.floor(Math.random() * rareAliens.length);
         return rareAliens[randomIndex];
       } else {
