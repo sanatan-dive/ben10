@@ -60,11 +60,9 @@ function AlienCardContent() {
       } else {
         const randomIndex = Math.floor(Math.random() * commonAliens.length);
         return commonAliens[randomIndex];
-      }
-      
+      }    
     };
     
-
     const assignedAlien = assignAlien();
 
     const newUserData = {
@@ -319,7 +317,7 @@ function AlienCardContent() {
       
         {/* Download Card Button */}
         <button
-          className="bg-gradient-to-r from-blue-800 via-blue-400 to-blue-800 mb-20 text-white py-2 px-4 rounded-full w-full sm:w-auto flex items-center justify-center gap-2 transition-transform duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg"
+          className="bg-gradient-to-r from-blue-800 via-blue-400 to-blue-800 sm:mb-0 mb-20 text-white py-2 px-4 rounded-full w-full sm:w-auto flex items-center justify-center gap-2 transition-transform duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg"
           onClick={downloadCard}
         >
           <FaDownload className="w-4 h-4" />
