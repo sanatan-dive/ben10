@@ -80,7 +80,7 @@ export async function POST(req: Request): Promise<NextResponse> {
 
       ${tweetTexts.join("\n")}
 
-      Keep the tone light and appropriate and generate a funny roast of this user posts keep it short like a tweet.
+      Keep the tone light and appropriate and generate a funny roast of this user posts also keep it very short like a tweet.
     `.trim();
 
     try {
