@@ -75,50 +75,59 @@ const Leaderboard = () => {
   };
 
   return (
-    <div className="min-h-screen flex justify-center flex-col items-center p-6">
+    <div className="min-h-screen flex justify-center flex-col items-center p-3 sm:p-4 md:p-6">
       {loadingUsers ? (
         <Loading />
       ) : (
-        <div className="w-full max-w-2xl p-6 mb-24 bg-stone-900 rounded-xl shadow-xl border border-green-600">
-          <h2 className="text-4xl font-extrabold text-center text-white mb-6">Leaderboard</h2>
-          {/* Search Box */}
-          <div className="mb-6">
+        <div className="w-full max-w-2xl p-3 sm:p-4 md:p-6 mb-16 sm:mb-20 md:mb-24 bg-stone-900 rounded-xl shadow-xl border border-green-600">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-center text-white mb-4 sm:mb-6">
+            Leaderboard
+          </h2>
+          
+          <div className="mb-4 sm:mb-6">
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by username"
-              className="w-full p-3 bg-stone-800 text-white rounded-md shadow-md"
+              className="w-full p-2 sm:p-3 bg-stone-800 text-white rounded-md shadow-md border border-stone-700 focus:border-green-500 focus:outline-none"
             />
           </div>
+
           {filteredLeaderboard.length === 0 ? (
-            <p className="text-center text-white">No users found.</p>
+            <p className="text-center text-white text-sm sm:text-base">No users found.</p>
           ) : (
-            <ul className="space-y-6">
+            <ul className="space-y-3 sm:space-y-4 md:space-y-6">
               {filteredLeaderboard.map((user) => {
-                const rank = leaderboard.findIndex((u) => u.id === user.id) + 1; // Find the original rank
+                const rank = leaderboard.findIndex((u) => u.id === user.id) + 1;
                 return (
                   <li
                     key={user.id}
-                    className="flex items-center justify-between p-4 bg-stone-950 border-2 rounded-lg shadow-md"
+                    className="flex items-center justify-between p-2 sm:p-3 md:p-4 bg-stone-950 border border-stone-800 rounded-lg shadow-md hover:border-green-600 transition-colors duration-200"
                   >
-                    <div className="flex items-center gap-2 space-x-4">
-                      <span className="text-lg font-bold text-green-400">#{rank}</span> {/* Display original rank */}
-                      <Image
-                        width={200}
-                        height={200}
-                        src={user.image}
+                    <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
+                      <span className="text-base sm:text-lg font-bold text-green-400 min-w-[24px] sm:min-w-[28px] text-center">
+                        #{rank}
+                      </span>
+                      
+                      <img
+                        src={user.image}}
                         alt={`${user.username}'s profile`}
-                        className="w-14 h-14 rounded-full border-2"
+                        className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-full border-2 object-cover"
                       />
-                      <div>
-                        <p className="font-bold text-white text-lg">{user.username}</p>
-                        <div className="flex items-center space-x-2">
-                          <p className="text-md text-green-400">{user.alienName}</p>
+                      
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
+                        <p className="font-bold text-white text-sm sm:text-base md:text-lg">
+                          {user.username}
+                        </p>
+                        <div className="flex items-center gap-2 mt-1 sm:mt-0">
+                          <p className="text-xs sm:text-sm md:text-md text-green-400">
+                            {user.alienName}
+                          </p>
                           <p
-                            className={`text-sm font-bold flex justify-center items-center ${alienTitleBackgroundClass(
+                            className={`text-xs sm:text-sm font-bold px-2 py-0.5 rounded-md ${alienTitleBackgroundClass(
                               user.alienTitle
-                            )} text-white px-2 rounded-md`}
+                            )}`}
                           >
                             {user.alienTitle}
                           </p>
