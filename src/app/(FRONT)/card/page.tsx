@@ -43,25 +43,16 @@ function AlienCardContent() {
     }
 
     const assignAlien = (): AlienData => {
-      const legendaryAliens = aliensData.filter((alien) => alien.title === "Legendary");
-      const epicAliens = aliensData.filter((alien) => alien.title === "Epic");
-      const rareAliens = aliensData.filter((alien) => alien.title === "Rare");
-      const commonAliens = aliensData.filter((alien) => alien.title === "Common");
+      // Combine all aliens into a single array
+      const allAliens = [...aliensData];
     
-      if ((posts / followers > 8) || (posts > 5000 && followers > 1000)) {
-        const randomIndex = Math.floor(Math.random() * legendaryAliens.length);
-        return legendaryAliens[randomIndex];
-      } else if ((posts / followers > 5) || (posts > 2000 && followers > 500)) {
-        const randomIndex = Math.floor(Math.random() * epicAliens.length);
-        return epicAliens[randomIndex];
-      } else if ((posts / followers > 3) || (posts > 200 && followers > 200)) {
-        const randomIndex = Math.floor(Math.random() * rareAliens.length);
-        return rareAliens[randomIndex];
-      } else {
-        const randomIndex = Math.floor(Math.random() * commonAliens.length);
-        return commonAliens[randomIndex];
-      }    
+      // Generate a random index
+      const randomIndex = Math.floor(Math.random() * allAliens.length);
+    
+      // Return the randomly selected alien
+      return allAliens[randomIndex];
     };
+    
     
     const assignedAlien = assignAlien();
 
