@@ -193,7 +193,7 @@ function AlienCardContent() {
   return (
     <div className="p-8 mt-2 flex flex-col items-center justify-center">
         <motion.div
-  className="relative w-full sm:w-[400px] bg-gradient-to-b from-stone-950 to-black rounded-lg shadow-xl"
+  className="relative w-full sm:w-[400px]  bg-gradient-to-b from-stone-950 to-black rounded-lg shadow-xl"
   ref={cardRef}
   initial={{ rotateY: 0, scale: 0.7 }} // Start small
   animate={{ rotateY: 1440, scale: 1 }} // Spin and scale to normal size
@@ -207,7 +207,7 @@ function AlienCardContent() {
   }}
   
 >
-      <Card ref={cardRef} className="w-full sm:w-[400px] p-2 bg-gradient-to-b from-stone-950 to-black rounded-lg shadow-xl">
+      <Card ref={cardRef} className="w-full sm:w-[400px]  p-2 bg-gradient-to-b from-stone-950 to-black rounded-lg shadow-xl">
         <div className="bg-gradient-to-b from-[#26811ecf] to-[#4ff04632] rounded-lg p-3 space-y-2">
           {/* Header */}
           <div className="flex items-center justify-center">
@@ -319,7 +319,7 @@ function AlienCardContent() {
       
         {/* Download Card Button */}
         <button
-          className="bg-gradient-to-r from-blue-800 via-blue-400 to-blue-800 text-white py-2 px-4 rounded-full w-full sm:w-auto flex items-center justify-center gap-2 transition-transform duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg"
+          className="bg-gradient-to-r from-blue-800 via-blue-400 to-blue-800 mb-20 text-white py-2 px-4 rounded-full w-full sm:w-auto flex items-center justify-center gap-2 transition-transform duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg"
           onClick={downloadCard}
         >
           <FaDownload className="w-4 h-4" />
