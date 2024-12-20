@@ -25,7 +25,10 @@ const Leaderboard = () => {
       try {
         const response = await axios.get("/api/leaderboard");
         setLoadingUsers(false);
-        setLeaderboard(response.data);
+        const sortedLeaderboard = response.data.sort(
+          (a: User, b: User) => alienTitlePriority(b.alienTitle) - alienTitlePriority(a.alienTitle)
+        );
+        setLeaderboard(sortedLeaderboard);
       } catch (error) {
         console.error("Error fetching leaderboard:", error);
         setLoadingUsers(false); // Stop loading even if there's an error
@@ -52,11 +55,9 @@ const Leaderboard = () => {
   };
 
   // Function to filter users based on the search query
-  const filteredLeaderboard = leaderboard
-    .filter((user) =>
-      user.username.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-    .sort((a, b) => alienTitlePriority(b.alienTitle) - alienTitlePriority(a.alienTitle)); // Sort based on priority
+  const filteredLeaderboard = leaderboard.filter((user) =>
+    user.username.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const alienTitleBackgroundClass = (alienTitle: string) => {
     switch (alienTitle) {
@@ -94,36 +95,39 @@ const Leaderboard = () => {
             <p className="text-center text-white">No users found.</p>
           ) : (
             <ul className="space-y-6">
-              {filteredLeaderboard.map((user, index) => (
-                <li
-                  key={user.id}
-                  className="flex items-center justify-between p-4 bg-stone-950 border-2 rounded-lg shadow-md"
-                >
-                  <div className="flex items-center gap-2 space-x-4">
-                    <span className="text-lg font-bold text-green-400">#{index + 1}</span> {/* Rank */}
-                    <Image
-                      width={200}
-                      height={200}
-                      src={user.image}
-                      alt={`${user.username}'s profile`}
-                      className="w-14 h-14 rounded-full border-2"
-                    />
-                    <div>
-                      <p className="font-bold text-white text-lg">{user.username}</p>
-                      <div className="flex items-center space-x-2">
-                        <p className="text-md text-green-400">{user.alienName}</p>
-                        <p
-                          className={`text-sm font-bold flex justify-center items-center ${alienTitleBackgroundClass(
-                            user.alienTitle
-                          )} text-white px-2 rounded-md`}
-                        >
-                          {user.alienTitle}
-                        </p>
+              {filteredLeaderboard.map((user) => {
+                const rank = leaderboard.findIndex((u) => u.id === user.id) + 1; // Find the original rank
+                return (
+                  <li
+                    key={user.id}
+                    className="flex items-center justify-between p-4 bg-stone-950 border-2 rounded-lg shadow-md"
+                  >
+                    <div className="flex items-center gap-2 space-x-4">
+                      <span className="text-lg font-bold text-green-400">#{rank}</span> {/* Display original rank */}
+                      <Image
+                        width={200}
+                        height={200}
+                        src={user.image}
+                        alt={`${user.username}'s profile`}
+                        className="w-14 h-14 rounded-full border-2"
+                      />
+                      <div>
+                        <p className="font-bold text-white text-lg">{user.username}</p>
+                        <div className="flex items-center space-x-2">
+                          <p className="text-md text-green-400">{user.alienName}</p>
+                          <p
+                            className={`text-sm font-bold flex justify-center items-center ${alienTitleBackgroundClass(
+                              user.alienTitle
+                            )} text-white px-2 rounded-md`}
+                          >
+                            {user.alienTitle}
+                          </p>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </li>
-              ))}
+                  </li>
+                );
+              })}
             </ul>
           )}
         </div>
