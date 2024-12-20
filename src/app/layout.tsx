@@ -48,7 +48,12 @@ export default function RootLayout({
           <Floating />
           {/* Main content */}
           {children}
+          <footer className="fixed top-0  w-full text-center py-2 bg-opacity-90 bg-black text-white">
+          Made with ❤️ by <a href="https://twitter.com/Sanatan_dive" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">@Sanatan_dive</a>
+        </footer>
         </ThemeProvider>
+        {/* Footer with credit */}
+     
       </body>
     </html>
   );
