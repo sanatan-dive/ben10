@@ -106,10 +106,11 @@ function AlienCardContent() {
       });
 
     // Fetch AI description from tweets
+    
     axios
       .post(
         "/api/tweets",
-        { username },
+        { username: username },
         { headers: { "Content-Type": "application/json" } }
       )
       .then((response) => {

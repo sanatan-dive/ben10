@@ -20,14 +20,13 @@ export default function Home() {
     setError("");
 
     try {
-      const response = await axios.get(`/api/twitter?username=${userName}`); // Use userName here
-      const { name, profile_image_url, followers_count, tweet_count } = response.data;
-      // console.log(response.data)
-      // localStorage.setItem("username", JSON.stringify(userName));
-      // console.log("item set")
+      const response = await axios.get(`/api/twitter?username=${userName}`); // 
+    
+
+      const { username, profile_image_url, followers_count, tweet_count } = response.data;
 
       router.push(
-        `/card?name=${encodeURIComponent(name)}&image=${encodeURIComponent(
+        `/card?name=${encodeURIComponent(username)}&image=${encodeURIComponent(
           profile_image_url
         )}&followers=${followers_count}&posts=${tweet_count}`
       );
