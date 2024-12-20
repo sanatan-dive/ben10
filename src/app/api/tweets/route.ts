@@ -10,43 +10,34 @@ export async function POST(req: Request): Promise<NextResponse> {
   try {
     const geminiApiKey = process.env.GEMINI_API_KEY;
     const rapidApiKey = process.env.RAPIDAPI_KEY;
-   
 
-    if (!geminiApiKey) {
-      throw new Error("GEMINI_API_KEY is not set in the environment variables.");
-    }
-
-    if (!rapidApiKey) {
-      throw new Error("RAPIDAPI_KEY is not set in the environment variables.");
+    if (!geminiApiKey || !rapidApiKey) {
+      throw new Error("Required API keys are not set in environment variables.");
     }
 
     // Initialize the generative AI client
     const genAI = new GoogleGenerativeAI(geminiApiKey);
     const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
-    // Parse the request body
+    const rawBody = await req.text();
+    if (!rawBody) {
+      return NextResponse.json({ error: "Request body is missing" }, { status: 400 });
+    }
+
     let data: RequestBody;
     try {
-      const rawBody = await req.text();
-      if (!rawBody) {
-        console.error("Empty body received");
-        return NextResponse.json({ error: "Request body is missing" }, { status: 400 });
-      }
-
       data = JSON.parse(rawBody);
     } catch (err) {
-      console.error("Error parsing JSON body:", err);
       return NextResponse.json({ error: "Invalid JSON format in request body" }, { status: 400 });
     }
 
-    const username = data.username;
+    const username = data.username?.trim();
     if (!username) {
       return NextResponse.json({ error: "Username field is required" }, { status: 400 });
     }
 
-    // Fetch tweets
     const tweetResponse = await fetch(
-      `https://twitter-x.p.rapidapi.com/user/tweets?username=${username}&limit=10`,
+      `https://twitter-x.p.rapidapi.com/user/tweets?username=${encodeURIComponent(username)}&limit=10`,
       {
         method: "GET",
         headers: {
@@ -57,41 +48,36 @@ export async function POST(req: Request): Promise<NextResponse> {
     );
 
     if (!tweetResponse.ok) {
-      const message = `Error fetching tweets: ${tweetResponse.statusText}`;
-      console.error(message);
-      return NextResponse.json({ error: message }, { status: tweetResponse.status });
+      return NextResponse.json(
+        { error: `Error fetching tweets: ${tweetResponse.statusText}` },
+        { status: tweetResponse.status }
+      );
     }
 
     const tweetJson = await tweetResponse.json();
-    const instructions = tweetJson?.data?.user?.result?.timeline_v2?.timeline?.instructions;
-    const tweetEntries = Array.isArray(instructions) && instructions.length > 0
-      ? instructions.find((inst: any) => inst.type === "TimelineAddEntries")?.entries || []
-      : [];
+    const instructions = tweetJson?.data?.user?.result?.timeline_v2?.timeline?.instructions || [];
+    const tweetEntries = instructions.find((inst: any) => inst.type === "TimelineAddEntries")?.entries || [];
 
-    if (!Array.isArray(tweetEntries)) {
-      return NextResponse.json({ error: "Invalid tweet data format" }, { status: 500 });
-    }
-
-    // Extract tweet texts
     const tweetTexts = tweetEntries
       .map((entry: any) => entry?.content?.itemContent?.tweet_results?.result?.legacy?.full_text)
-      .filter((text: string | undefined) => text) as string[];
+      .filter((text: string | undefined) => typeof text === "string");
 
-    if (tweetTexts.length === 0) {
-      return NextResponse.json({ error: "No valid tweets found" }, { status: 404 });
+    if (!tweetTexts.length) {
+      return NextResponse.json({ error: "No valid tweets found." }, { status: 404 });
     }
 
-    // Combine tweets into a single prompt
-    const combinedTweets = tweetTexts.join("\n");
-    const prompt = `${combinedTweets}\n\nBased on these tweets, provide a humorous roast in a lighthearted observation in normal human language. Keep it short, like a tweet.`;
+    const sanitizedTweets = tweetTexts.map((tweet :string) => tweet.replace(/[^a-zA-Z0-9\s]/g, ""));
+    const combinedTweets = sanitizedTweets.join("\n");
+    const prompt = `${combinedTweets}\n\nBased on these tweets, provide a humorous but safe and lighthearted observation in human language keep it real short under 50 words.`;
 
-    // Generate content using the Gemini model
-    const genAIResult = await model.generateContent(prompt);
+    let genAIResult;
+    try {
+      genAIResult = await model.generateContent(prompt);
+    } catch (err) {
+      return NextResponse.json({ error: "Failed to generate AI response." }, { status: 500 });
+    }
 
-  
-
-    // Extract the generated content
-    const summary = (await genAIResult.response?.text()) || "No content generated.";
+    const summary = genAIResult?.response?.text?.() || "No content generated.";
     return NextResponse.json({ summary });
 
   } catch (error) {
