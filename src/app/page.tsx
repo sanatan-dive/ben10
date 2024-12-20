@@ -21,7 +21,6 @@ export default function Home() {
 
     try {
       const response = await axios.get(`/api/twitter?username=${userName}`); // 
-    console.log(response.data.username);
 
       const { username, profile_image_url, followers_count, tweet_count } = response.data;
 
