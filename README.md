@@ -1,4 +1,4 @@
-# 🚧UNDER CONSTRUCTION🚧
+
 ---
 
 # 🛸 Ben 10 AI Analyzer: Discover Your Alien Persona! 🌟
@@ -12,39 +12,27 @@ Welcome to the **Ben 10 AI Analyzer**, a cutting-edge web application where your
 - **🔍 Analyze Your Tweets:**  
   Enter your Twitter username, and our AI will analyze your tweet patterns to assign you one of the **76 Ben 10 Aliens**.  
 
-- **👍 Yah or 👎 Nah Voting System:**  
-  Vote on others' aliens! If someone gets more than 10 "Nahs," they get reassigned a new alien.  
-
 - **🏆 Leaderboard:**  
   Check out the leaderboard showcasing the most popular users with the highest "Yah" votes.  
-
-- **🔒 Secure Authentication:**  
-  Login with your Twitter account using **Kinde** to keep your data safe.
 
 ---
 
 ## 🚀 How It Works
 
-1. **Login**  
-   Log in securely using your Twitter account.  
 
-2. **Analyze**  
+1. **Analyze**  
    Enter your Twitter username, and our AI will fetch your tweets for analysis.  
 
-3. **Alien Assignment**  
+2. **Alien Assignment**  
    Based on your tweets, you’ll get one of 76 iconic Ben 10 aliens like **Four Arms**, **Heatblast**, or **Alien X**.  
-
-4. **Vote and Compete**  
-   Vote "Yah" or "Nah" on others’ aliens and climb the leaderboard!  
 
 ---
 
 ## 🌐 Tech Stack
 
 - **Frontend**: [Next.js 15](https://nextjs.org/) with TypeScript and Tailwind CSS  
-- **AI Model**: Hugging Face's text-classification models  
-- **Twitter Integration**: Twitter API v2  
-- **Authentication**: [Kinde](https://kinde.com)  
+- **AI Model**: Gemini AI 
+- **Twitter Integration**: Twitter API v2   
 - **Database**: PostgreSQL with Prisma ORM  
 - **Hosting**: Vercel  
 
