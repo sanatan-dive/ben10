@@ -1,6 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
-import aliensData from "./alien.json";
 
 interface RequestBody {
   username: string;
