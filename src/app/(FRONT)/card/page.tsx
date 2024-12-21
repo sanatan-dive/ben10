@@ -201,7 +201,14 @@ function AlienCardContent() {
           {/* Header */}
           <div className="flex items-center justify-center">
             <div className="flex items-center gap-2">
-              <h2 className="text-xl font-bold">{userData.username}</h2>
+            <a 
+  href={`https://twitter.com/${userData.username}`} 
+  target="_blank" 
+  rel="noopener noreferrer"
+>
+  <h2 className="text-xl font-bold">{userData.username}</h2>
+</a>
+
               <Flame className="w-4 h-4 text-red-500" />
             </div>
           </div>
