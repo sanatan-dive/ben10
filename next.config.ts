@@ -3,7 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   /* config options here */
   images: {
-    domains:['abs.twimg.com'],
+    domains:['pbs.twimg.com']
   },
   webpack(config, { isServer }) {
     // Exclude source maps from being processed
