@@ -105,6 +105,11 @@ const Leaderboard = () => {
                     key={user.id}
                     className="flex items-center justify-between p-2 sm:p-3 md:p-4 bg-stone-950 border border-stone-800 rounded-lg shadow-md hover:border-green-600 transition-colors duration-200"
                   >
+                    <a 
+  href={`https://twitter.com/${user.username}`} 
+  target="_blank" 
+  rel="noopener noreferrer"
+>
                     <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
                       <span className="text-base sm:text-lg font-bold text-green-400 min-w-[24px] sm:min-w-[28px] text-center">
                         #{rank}
@@ -132,8 +137,11 @@ const Leaderboard = () => {
                             {user.alienTitle}
                           </p>
                         </div>
+
                       </div>
+                      
                     </div>
+                    </a>
                   </li>
                 );
               })}
