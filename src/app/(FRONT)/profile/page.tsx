@@ -101,7 +101,14 @@ const Vote = () => {
                         className="w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2"
                       />
                       <div className="ml-3 sm:ml-4">
+                      <a 
+  href={`https://twitter.com/${user.username}`} 
+  target="_blank" 
+  rel="noopener noreferrer"
+>
+  
                         <p className="font-bold text-base sm:text-lg">{user.username}</p>
+                      </a>
                         <div className="flex flex-wrap gap-2 items-center">
                           <p className="text-sm sm:text-md text-green-400">{user.alienName}</p>
                           <p
